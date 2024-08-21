@@ -39,62 +39,71 @@ GraphQL query named `posts` that returns an array of `Post` entities. */
     return this.postService.create(title, content,user);
   }
 
-/* The `deletePost` mutation in the `PostResolver` class is a GraphQL mutation that takes an `id`
-argument of type string and returns a Promise that resolves to a string. This mutation is likely
-used to delete a post from the database permanently by calling the `delete` method from the
-`postService` instance, passing the `id` of the post to be deleted. The `delete` method likely
-handles the logic to remove a post from the database permanently. */
+/**
+ * This function deletes a post based on the provided ID.
+ * @param {string} id - The `id` parameter in the `deletePost` function is a string type argument that
+ * represents the identifier of the post that needs to be deleted. This function is part of a service
+ * that interacts with posts and calls the `delete` method from the `postService` to delete the post
+ * with the
+ * @returns A Promise<string> is being returned.
+ */
   @Mutation(() => String)
   deletePost(
     @Args(
       'id'
-    ) id: string): Promise<String>
-    {
-      return this.postService.delete(id)
-    }
+    ) id: string
+  ): Promise<String> {
+    return this.postService.delete(id)
+  }
   
-/* The `removePost` mutation in the `PostResolver` class is a GraphQL mutation that takes an `id`
-argument of type string and returns a Promise that resolves to a string. This mutation is likely
-used to permanently remove a post from the database by calling the `remove` method from the
-`postService` instance, passing the `id` of the post to be removed. The `remove` method likely
-handles the logic to delete a post from the database permanently. */
+/**
+ * This function removes a post based on the provided ID.
+ * @param {string} id - The `id` parameter in the `removePost` function is a string type. It is used to
+ * identify the post that needs to be removed from the post service.
+ * @returns The `removePost` method is returning a Promise that resolves to a string. The string is the
+ * result of calling the `remove` method on the `postService` with the `id` parameter passed to the
+ * `removePost` method.
+ */
   @Mutation(() => String)
   removePost(
     @Args(
       'id'
-    ) id:string): Promise<String>
-    {
-      return this.postService.remove(id)
-    }
+    ) id: string
+  ): Promise<String> {
+    return this.postService.remove(id)
+  }
 
-/* The `restorePost` mutation in the `PostResolver` class is a GraphQL mutation that takes an `id`
-argument of type string and returns a Promise that resolves to a `Post` entity. This mutation is
-used to restore a previously deleted post by calling the `restore` method from the `postService`
-instance, passing the `id` of the post to be restored. The `restore` method likely handles the logic
-to restore a post from a soft-deleted state to an active state in the database. */
+/**
+ * This function restores a post by its ID using the post service.
+ * @param {string} id - The `restorePost` function takes a single parameter `id` of type string. This
+ * function is used to restore a post by calling the `restore` method from the `postService` with the
+ * provided `id`.
+ * @returns A Promise<Post> is being returned.
+ */
   @Mutation(() => Post)
   restorePost(
     @Args(
       'id'
-    ) id:string): Promise<Post>
-    {
-      return this.postService.restore(id)
-    }
+    ) id:string
+  ): Promise<Post> {
+    return this.postService.restore(id)
+  }
 
-/* The `findOnePost` mutation in the `PostResolver` class is a GraphQL mutation that takes an `id`
-argument of type string and returns a Promise that resolves to a `Post` entity. This mutation is
-likely used to find and return a specific post based on the provided `id` by calling the `findOne`
-method from the `postService` instance, passing the `id` of the post to be retrieved. The `findOne`
-method likely handles the logic to fetch a single post entity from the database based on the
-provided `id`. */
+/**
+ * This function finds and returns a single post based on the provided ID.
+ * @param {string} id - The `id` parameter is a string that represents the unique identifier of a post.
+ * It is used to retrieve a specific post from the database by passing it to the `findOne` method of
+ * the `postService`.
+ * @returns A Promise that resolves to a Post object is being returned.
+ */
   @Query(() => Post)
   findOnePost(
     @Args(
       'id'
-    ) id:string): Promise<Post>
-    {
-      return this.postService.findOne(id)
-    }
+    ) id:string
+  ): Promise<Post> {
+    return this.postService.findOne(id)
+  }
   
   @Query(() => [Post], { name: 'deleted_posts' })
   findDeletedPost() {
