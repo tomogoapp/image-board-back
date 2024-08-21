@@ -1,0 +1,60 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: String!
+  email: String!
+  username: String!
+  isActive: String!
+  roles: String!
+  created_at: DateTime
+  updated_at: DateTime
+  deleted_at: DateTime
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Post {
+  id: String!
+  createdBy: User!
+  title: String!
+  content: String!
+  slug: String!
+  created_at: DateTime
+  updated_at: DateTime
+  deleted_at: DateTime
+}
+
+type CreateUserResponseDTO {
+  message: String!
+}
+
+type LoginResponseDTO {
+  token: String!
+  message: String!
+  user: User!
+}
+
+type LogoutUserResponseDTO {
+  message: String!
+}
+
+type Query {
+  posts: [Post!]!
+  findOnePost(id: String!): Post!
+  deleted_posts: [Post!]!
+  login_user(username: String!, password: String!): LoginResponseDTO!
+}
+
+type Mutation {
+  createPost(title: String!, content: String!): Post!
+  deletePost(id: String!): String!
+  removePost(id: String!): String!
+  restorePost(id: String!): Post!
+  create_user(username: String!, email: String!, password: String!, confirmPassword: String!): CreateUserResponseDTO!
+  logout(token: String!): LogoutUserResponseDTO!
+}

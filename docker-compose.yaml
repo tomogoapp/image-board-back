@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: nest_app
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3000:3000" # Mapear puerto 3000 del contenedor al 3000 del host
+    volumes:
+      - ./:/app # Monta el directorio de trabajo actual en /app dentro del contenedor
+    networks:
+      - windows96
+
+  db:
+    image: postgres:14.3
+    restart: always
+    ports:
+      - ${POSTGRES_DB_PORT}
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_DATABASE}
+    container_name: ${POSTGRES_DB_CONTAINER_NAME}
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    networks:
+      - windows96
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80" # Exponer puerto 80 en el host
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - windows96
+    depends_on:
+      - app
+
+networks:
+  windows96:
+    external: true
