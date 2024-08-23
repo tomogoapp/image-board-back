@@ -29,4 +29,4 @@ WORKDIR /app
 COPY --from=build /app .
 
 # Usa nodemon para el entorno de desarrollo
-CMD ["yarn", "start:dev"]
+CMD ["node", "dist/main.js"]
