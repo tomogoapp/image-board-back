@@ -3,6 +3,7 @@ import { AuthService } from './auth.service'
 import { User } from './entities/user.entity'
 import { CreateUserResponseDTO, LoginResponseDTO } from './dto'
 import { LogoutUserResponseDTO } from './dto/logout-user-response.dto'
+import { Auth } from './decorators'
 
 @Resolver(() => User)
 export class AuthResolver {
@@ -48,7 +49,7 @@ export class AuthResolver {
  * object. This object is created by calling the `create` method of the `authService` with the
  * `username`, `email`, `password`, and `confirmPassword` parameters.
  */
-  @Mutation(() => CreateUserResponseDTO,{name:'create_user'})
+  @Mutation(() => CreateUserResponseDTO,{name:'create_use'})
   async createUser(
     @Args('username') username: string,
     @Args('email') email: string,
