@@ -27,11 +27,12 @@ export class PostService {
  * @returns The `create` method is returning a Promise that resolves to a `Post` object after saving
  * the post created with the provided `createPostDto` and `user` information.
  */
-  async create( createPostDto:CreatePostDto,user:User):Promise<Post> {
+  async create( createPostDto:CreatePostDto,user:User,imageUrl:string):Promise<Post> {
 
     const post = this.postRepository.create({
       ...createPostDto,
-      createdBy:user
+      image: imageUrl,
+      createdBy:user,
     })
     return this.postRepository.save(post)
   }

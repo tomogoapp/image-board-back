@@ -8,6 +8,7 @@ import { CreatePostDto } from './dto/create-post.input'
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard'
 import { UseGuards } from '@nestjs/common'
 import { S3Service } from '../s3/s3.service'
+import { FileUpload, GraphQLUpload } from 'graphql-upload';
 
 @Resolver(() => Post)
 @UseGuards(GqlAuthGuard)
@@ -50,9 +51,31 @@ export class PostResolver {
   async createPost(
     @Args('createPostInput') createPostDto: CreatePostDto,
     @GetUser() user: User,
+    @Args({ name: 'image', type: () => GraphQLUpload, nullable:true })
+    image?: FileUpload,
   ): Promise<Post> {
 
-    return this.postService.create(createPostDto,user);
+    let imageUrl: string | undefined
+
+    if(image){
+      const {createReadStream, filename,mimetype} = image
+
+      if(!['image/jpeg','images.png'].includes(mimetype)){
+        throw new Error('Image type doesnt supported')
+      }
+
+      const stream = createReadStream()
+      // const chunks=[]
+      // for await (const chunk of stream){
+      //   chunks.push(chunk)
+      // }
+
+      // const fileBuffer = Buffer.concat(chunks)
+      const fileKey = `${Date.now()}-${filename}`
+      imageUrl = await this.s3Service.uploadFile(fileKey, stream , mimetype)
+    }
+
+    return this.postService.create(createPostDto,user,imageUrl);
   }
 
 /**

@@ -53,7 +53,7 @@ type Query {
 }
 
 type Mutation {
-  createPost(createPostInput: CreatePostDto!): Post!
+  createPost(createPostInput: CreatePostDto!, image: Upload): Post!
   deletePost(id: String!): String!
   removePost(id: String!): String!
   restorePost(id: String!): Post!
@@ -64,6 +64,9 @@ type Mutation {
 input CreatePostDto {
   title: String!
   content: String!
-  image: String!
+  image: String
   anonPost: Boolean!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
