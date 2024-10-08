@@ -7,8 +7,6 @@ import { validRoles } from 'src/auth/interface'
 import { CreatePostDto } from './dto/create-post.input'
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard'
 import { UseGuards } from '@nestjs/common'
-import *  as Upload from 'graphql-upload/Upload.js'
-import *  as GraphQLUpload from 'graphql-upload/GraphQLUpload.js'
 import { S3Service } from '../s3/s3.service'
 
 @Resolver(() => Post)
@@ -51,27 +49,10 @@ export class PostResolver {
   @Auth()
   async createPost(
     @Args('createPostInput') createPostDto: CreatePostDto,
-    @Args({ name: 'file', type: () => GraphQLUpload })
-    file: Upload,
     @GetUser() user: User,
   ): Promise<Post> {
 
-    const { createReadStream, filename, mimetype } = file
-
-    if(!['image/jpeg','image/png'].includes(mimetype)){
-      throw new Error('Error: file type not supported')
-    }
-
-    // Genera un nombre único para el archivo
-    const uniqueFilename = `${Date.now()}-${filename}`
-
-    // Sube el archivo a MinIO utilizando el SDK de S3
-    await this.s3Service.uploadFile(uniqueFilename, createReadStream(), mimetype)
-
-    // Construye la URL de acceso al archivo
-    const fileUrl = `${process.env.MINIO_ENDPOINT}/${process.env.MINIO_BUCKET}/${uniqueFilename}`
-
-    return this.postService.create(createPostDto,user,fileUrl);
+    return this.postService.create(createPostDto,user);
   }
 
 /**

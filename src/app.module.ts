@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer,Module,NestModule } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { join } from 'path'
@@ -7,6 +7,11 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { PostModule } from './post/post.module'
 import { AuthModule } from './auth/auth.module'
 import { S3Module } from './s3/s3.module'
+import { graphqlUploadExpress } from 'graphql-upload'
+import {
+  ApolloServerPluginLandingPageLocalDefault,
+} from '@apollo/server/plugin/landingPage/default'
+
 
 @Module({
   imports: [
@@ -23,15 +28,28 @@ import { S3Module } from './s3/s3.module'
       entities:[join(__dirname,'**','*.entity.{ts,js}')],
       synchronize: true
     }),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      imports: [ConfigModule],
       driver: ApolloDriver,
-      autoSchemaFile:join(process.cwd(),'src/schema.gql'),
-      //autoSchemaFile: true,
-      context: ({ req }) => ({ req }),
+      useFactory: async () => ({
+        playground: false,
+        uploads: false,
+        plugins: [ApolloServerPluginLandingPageLocalDefault({ footer: false })],
+        autoSchemaFile:join(process.cwd(),'src/schema.gql'),
+        context: ({ req }) => ({ req }),
+      }),
     }),
     PostModule,
     AuthModule,
     S3Module,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }))
+      .forRoutes('graphql')
+  }
+
+}

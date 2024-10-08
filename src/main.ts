@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core'
 import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express'
 import { AppModule } from './app.module'
 import * as express from 'express'
-import { graphqlUploadExpress } from 'graphql-upload-ts'
+import { graphqlUploadExpress } from 'graphql-upload'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule,new ExpressAdapter(),{
@@ -15,10 +15,7 @@ async function bootstrap() {
   // Importación dinámica de graphql-upload
   //const { graphqlUploadExpress } = await import('graphql-upload/graphqlUploadExpress.js')
 
-  app.use(
-    '/graphql',
-    graphqlUploadExpress({ maxFileSize: 100000000, maxFiles: 10 }),
-  )
+  app.use(graphqlUploadExpress())
 
   await app.listen(3000)
 }

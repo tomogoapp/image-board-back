@@ -23,6 +23,7 @@ type Post {
   createdBy: User
   title: String!
   content: String!
+  image: String
   anonPost: Boolean!
   slug: String!
   created_at: DateTime
@@ -63,5 +64,6 @@ type Mutation {
 input CreatePostDto {
   title: String!
   content: String!
+  image: String!
   anonPost: Boolean!
 }
