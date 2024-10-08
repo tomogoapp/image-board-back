@@ -2,11 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Post {
+type User {
   id: String!
-  title: String!
-  content: String!
-  slug: String!
+  email: String!
+  username: String!
+  isActive: String!
+  roles: String!
   created_at: DateTime
   updated_at: DateTime
   deleted_at: DateTime
@@ -17,12 +18,13 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type User {
-  id: ID!
-  email: String!
-  username: String!
-  isActive: String!
-  roles: String!
+type Post {
+  id: String!
+  createdBy: User
+  title: String!
+  content: String!
+  anonPost: Boolean!
+  slug: String!
   created_at: DateTime
   updated_at: DateTime
   deleted_at: DateTime
@@ -50,10 +52,16 @@ type Query {
 }
 
 type Mutation {
-  createPost(title: String!, content: String!): Post!
+  createPost(createPostInput: CreatePostDto!): Post!
   deletePost(id: String!): String!
   removePost(id: String!): String!
   restorePost(id: String!): Post!
   create_user(username: String!, email: String!, password: String!, confirmPassword: String!): CreateUserResponseDTO!
   logout(token: String!): LogoutUserResponseDTO!
+}
+
+input CreatePostDto {
+  title: String!
+  content: String!
+  anonPost: Boolean!
 }

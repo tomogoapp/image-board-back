@@ -1,45 +1,104 @@
-version: '3.9'
+version: '3.5'
 
 services:
-  app:
-    build: .
-    container_name: nest_app
-    restart: always
-    env_file:
-      - .env
-    ports:
-      - "3000:3000" # Mapear puerto 3000 del contenedor al 3000 del host
-    volumes:
-      - ./:/app # Monta el directorio de trabajo actual en /app dentro del contenedor
-    networks:
-      - windows96
-
   db:
     image: postgres:14.3
     restart: always
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB_DATABASE}
     container_name: ${POSTGRES_DB_CONTAINER_NAME}
     volumes:
       - ./postgres:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
     networks:
       - windows96
 
-  nginx:
-    image: nginx:latest
-    container_name: nginx
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: imagechan-back
+    environment:
+      - PORT=${PORT}
     ports:
-      - "80:80" # Exponer puerto 80 en el host
+      - '3000:3000'
+    depends_on:
+      - db
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./src:/app/src
     networks:
       - windows96
-    depends_on:
-      - app
+
+  minio:
+    image: minio/minio
+    container_name: ${MINIO_CONTAINER_NAME}
+    ports:
+      - ${MINIO_PORTS_DB}
+      - ${MINIO_PORTS_INTERFACE}
+    volumes:
+      - "/mnt/data:/data"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    command: server /data/${MINIO_BUCKET} --console-address ":9005"
+    restart: unless-stopped
+    networks:
+      - ${NETWORK}
+
+
 
 networks:
   windows96:
     external: true
+
+
+
+
+
+# version: '3.9'
+
+# services:
+#   # app:
+#   #   build: .
+#   #   container_name: nest_app
+#   #   restart: always
+#   #   env_file:
+#   #     - .env
+#   #   ports:
+#   #     - "3000:3000" # Mapear puerto 3000 del contenedor al 3000 del host
+#   #   volumes:
+#   #     - ./:/app # Monta el directorio de trabajo actual en /app dentro del contenedor
+#   #   networks:
+#   #     - windows96
+
+#   db:
+#     image: postgres:14.3
+#     restart: always
+#     ports:
+#       - "5432:5432"
+#     environment:
+#       POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
+#       POSTGRES_DB: ${POSTGRES_DB_DATABASE}
+#     container_name: ${POSTGRES_DB_CONTAINER_NAME}
+#     volumes:
+#       - ./postgres:/var/lib/postgresql/data
+#     networks:
+#       - windows96
+
+#   # nginx:
+#   #   image: nginx:latest
+#   #   container_name: nginx
+#   #   ports:
+#   #     - "80:80" # Exponer puerto 80 en el host
+#   #   volumes:
+#   #     - ./nginx.conf:/etc/nginx/nginx.conf
+#   #   networks:
+#   #     - windows96
+#   #   depends_on:
+#   #     - app
+
+# networks:
+#   windows96:
+#     external: true

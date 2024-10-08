@@ -6,6 +6,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { PostModule } from './post/post.module'
 import { AuthModule } from './auth/auth.module'
+import { S3Module } from './s3/s3.module'
 
 @Module({
   imports: [
@@ -24,10 +25,13 @@ import { AuthModule } from './auth/auth.module'
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile:join(process.cwd(),'src/schema.gql')
+      autoSchemaFile:join(process.cwd(),'src/schema.gql'),
+      //autoSchemaFile: true,
+      context: ({ req }) => ({ req }),
     }),
     PostModule,
     AuthModule,
-  ]
+    S3Module,
+  ],
 })
 export class AppModule {}

@@ -1,20 +1,38 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args, ResolveField, Parent, Context } from '@nestjs/graphql'
 import { PostService } from './post.service'
 import { Post } from './entities/post.entity'
 import { Auth, GetUser } from 'src/auth/decorators'
 import { User } from 'src/auth/entities/user.entity'
 import { validRoles } from 'src/auth/interface'
+import { CreatePostDto } from './dto/create-post.input'
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard'
+import { UseGuards } from '@nestjs/common'
+import *  as Upload from 'graphql-upload/Upload.js'
+import *  as GraphQLUpload from 'graphql-upload/GraphQLUpload.js'
+import { S3Service } from '../s3/s3.service'
 
 @Resolver(() => Post)
+@UseGuards(GqlAuthGuard)
 export class PostResolver {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private readonly s3Service: S3Service,
+  ) {}
 
-/* The code snippet `@Query(() => [Post], { name: 'posts' })` in the `PostResolver` class is defining a
-GraphQL query named `posts` that returns an array of `Post` entities. */
-  @Query(() => [Post], { name: 'posts' })
-  findAll() {
+  /**
+   * This async function returns a Promise that resolves to an array of Post objects fetched from the
+   * postService.
+   * @returns An array of `Post` objects is being returned asynchronously as a Promise.
+   */
+  @Query(() => [Post])
+  async posts(): Promise<Post[]> {
     return this.postService.findAll();
   }
+
+  // @Query(() => [Post], { name: 'posts' })
+  // findAll() {
+  //   return this.postService.findAll();
+  // }
 
 /**
  * This TypeScript function creates a new post with a title, content, and user information.
@@ -32,11 +50,28 @@ GraphQL query named `posts` that returns an array of `Post` entities. */
   @Mutation(() => Post)
   @Auth()
   async createPost(
-    @Args('title') title: string,
-    @Args('content') content: string,
+    @Args('createPostInput') createPostDto: CreatePostDto,
+    @Args({ name: 'file', type: () => GraphQLUpload })
+    file: Upload,
     @GetUser() user: User,
   ): Promise<Post> {
-    return this.postService.create(title, content,user);
+
+    const { createReadStream, filename, mimetype } = file
+
+    if(!['image/jpeg','image/png'].includes(mimetype)){
+      throw new Error('Error: file type not supported')
+    }
+
+    // Genera un nombre único para el archivo
+    const uniqueFilename = `${Date.now()}-${filename}`
+
+    // Sube el archivo a MinIO utilizando el SDK de S3
+    await this.s3Service.uploadFile(uniqueFilename, createReadStream(), mimetype)
+
+    // Construye la URL de acceso al archivo
+    const fileUrl = `${process.env.MINIO_ENDPOINT}/${process.env.MINIO_BUCKET}/${uniqueFilename}`
+
+    return this.postService.create(createPostDto,user,fileUrl);
   }
 
 /**
@@ -109,4 +144,34 @@ GraphQL query named `posts` that returns an array of `Post` entities. */
   findDeletedPost() {
     return this.postService.findDeleted()
   }
+
+  @ResolveField(() => User, { nullable: true })
+  async createdBy(@Parent() post: Post, @Context() context): Promise<User | null> {
+    const requestingUser: User = context.req.user;
+  
+    // Aseguramos que el creador del post esté cargado
+    if (!post.createdBy) {
+      post.createdBy = await this.postService.getPostCreator(post.id);
+    }
+  
+    // Si el usuario es ADMIN, siempre muestra el creador
+    if (requestingUser && requestingUser.roles && requestingUser.roles.includes('admin')) {
+      return post.createdBy;
+    }
+  
+    // Si el usuario es el creador del post, mostrar el creador
+    if (requestingUser && requestingUser.id === post.createdBy.id) {
+      return post.createdBy;
+    }
+  
+    // Si el post es anónimo, no mostrar el creador
+    if (post.anonPost) {
+      return null;
+    }
+  
+    // Para posts no anónimos, mostrar el creador
+    return post.createdBy;
+  }
+  
+  
 }

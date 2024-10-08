@@ -16,15 +16,19 @@ export class Post {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Field(() => User)
   @ManyToOne(
-  () => User,
-  ( user ) => user.id,
-  {
-      eager:true
-  }
+    () => User,
+    ( user ) => user.id,
+    {
+        eager:true
+    }
   )
-  createdBy: User
+  //@JoinColumn({ name: 'created_by_id' })
+  @Field(
+    () => User, 
+    { nullable: true }
+  )
+  createdBy?: User
 
   @Field(() => String)
   @Column()
@@ -33,6 +37,16 @@ export class Post {
   @Field()
   @Column()
   content: string
+
+  @Field({ nullable: true })
+  @Column({nullable:true})
+  image?:string
+
+  @Field(() => Boolean)
+  @Column('bool',{
+    default: true
+  })
+  anonPost: boolean
 
   @Field()
   @Column()

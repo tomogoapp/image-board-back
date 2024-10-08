@@ -49,7 +49,7 @@ export class AuthResolver {
  * object. This object is created by calling the `create` method of the `authService` with the
  * `username`, `email`, `password`, and `confirmPassword` parameters.
  */
-  @Mutation(() => CreateUserResponseDTO,{name:'create_use'})
+  @Mutation(() => CreateUserResponseDTO,{name:'create_user'})
   async createUser(
     @Args('username') username: string,
     @Args('email') email: string,
