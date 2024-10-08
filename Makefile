@@ -9,7 +9,7 @@ down:
 	docker-compose down
 
 build:
-	sudo rm -R postgres && docker-compose up --build
+	docker-compose up --build
 
 logs:
 	docker-compose logs -f

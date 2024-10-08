@@ -3,6 +3,7 @@ import { AuthService } from './auth.service'
 import { User } from './entities/user.entity'
 import { CreateUserResponseDTO, LoginResponseDTO } from './dto'
 import { LogoutUserResponseDTO } from './dto/logout-user-response.dto'
+import { Auth } from './decorators'
 
 @Resolver(() => User)
 export class AuthResolver {

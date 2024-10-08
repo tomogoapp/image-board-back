@@ -43,7 +43,6 @@ export class AuthService {
 
 
   async create(createUserDTO: CreateUserDTO):Promise<CreateUserResponseDTO> {
-  
     try{
       const { password, confirmPassword, ...userData } = createUserDTO
 

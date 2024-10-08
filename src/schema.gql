@@ -20,9 +20,10 @@ scalar DateTime
 
 type Post {
   id: String!
-  createdBy: User!
+  createdBy: User
   title: String!
   content: String!
+  anonPost: Boolean!
   slug: String!
   created_at: DateTime
   updated_at: DateTime
@@ -51,10 +52,16 @@ type Query {
 }
 
 type Mutation {
-  createPost(title: String!, content: String!): Post!
+  createPost(createPostInput: CreatePostDto!): Post!
   deletePost(id: String!): String!
   removePost(id: String!): String!
   restorePost(id: String!): Post!
   create_user(username: String!, email: String!, password: String!, confirmPassword: String!): CreateUserResponseDTO!
   logout(token: String!): LogoutUserResponseDTO!
+}
+
+input CreatePostDto {
+  title: String!
+  content: String!
+  anonPost: Boolean!
 }

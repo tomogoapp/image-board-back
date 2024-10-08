@@ -1,32 +1,13 @@
-FROM nginx:latest
-
-# Copia la plantilla de configuración
-COPY nginx.conf /etc/nginx/templates/nginx.conf.template
-
-# Instala envsubst
-RUN apt-get update && apt-get install -y gettext-base
-
-# Reemplaza variables de entorno en la plantilla y genera nginx.conf
-CMD envsubst '${CORS_ORIGIN}' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'
-
-# Etapa de construcción
-FROM node:18-alpine as build
+FROM node:18
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN yarn install
+
+RUN npm install
 
 COPY . .
 
-RUN yarn build
+RUN npm run build
 
-# Etapa de producción/desarrollo
-FROM node:18-alpine as production
-
-WORKDIR /app
-
-COPY --from=build /app .
-
-# Usa nodemon para el entorno de desarrollo
-CMD ["yarn", "start:dev"]
+CMD [ "npm", "run", "start:dev" ]
