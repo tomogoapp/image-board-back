@@ -8,7 +8,7 @@ import { CreatePostDto } from './dto/create-post.input'
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard'
 import { UseGuards } from '@nestjs/common'
 import { S3Service } from '../s3/s3.service'
-import { FileUpload, GraphQLUpload } from 'graphql-upload';
+import { FileUpload, GraphQLUpload } from 'graphql-upload-ts';
 
 @Resolver(() => Post)
 @UseGuards(GqlAuthGuard)
@@ -34,17 +34,24 @@ export class PostResolver {
   // }
 
 /**
- * This TypeScript function creates a new post with a title, content, and user information.
- * @param {string} title - The `title` parameter is a string that represents the title of the post
- * being created.
- * @param {string} content - The `content` parameter in the `createPost` function is a string that
- * represents the content of the post that the user wants to create. It is one of the arguments
- * required for creating a new post.
- * @param {User} user - The `user` parameter in the `createPost` function is of type `User`. It is
- * likely used to identify the user who is creating the post. This parameter is decorated with
- * `@GetUser()`, which suggests that it is being extracted from the request context or session. This
- * way,
- * @returns The `createPost` method is returning a Promise that resolves to a `Post` object.
+ * This TypeScript function creates a post with optional image upload functionality and returns a
+ * Promise of the created post.
+ * @param {CreatePostDto} createPostDto - The `createPostDto` parameter is an object that contains
+ * the data needed to create a new post. It likely includes properties such as title, content, and
+ * any other relevant information for the post. This parameter is passed to the `createPost` function
+ * when a new post is being created.
+ * @param {User} user - The `user` parameter in the `createPost` function represents the user who is
+ * creating the post. It is of type `User` and is obtained using the `@GetUser()` decorator. This
+ * parameter allows you to identify the user who is making the post and associate the post with their
+ * account
+ * @param {FileUpload} image - The `image` parameter in the `createPost` function is of type
+ * `FileUpload`, which is used to handle file uploads in GraphQL. When a user uploads an image, the
+ * `image` parameter will contain information about the uploaded file, such as the `createReadStream`
+ * function to access the
+ * @returns The `createPost` function is returning a Promise that resolves to a `Post` object. The
+ * function first checks if an image file is provided, validates the file type, uploads the file to
+ * an S3 bucket using the `s3Service`, and then calls the `create` method of the `postService` to
+ * create a new post with the provided data (createPostDto, user,
  */
   @Mutation(() => Post)
   @Auth()
@@ -52,7 +59,7 @@ export class PostResolver {
     @Args('createPostInput') createPostDto: CreatePostDto,
     @GetUser() user: User,
     @Args({ name: 'image', type: () => GraphQLUpload, nullable:true })
-    image?: FileUpload,
+    image: FileUpload,
   ): Promise<Post> {
 
     let imageUrl: string | undefined
@@ -64,15 +71,10 @@ export class PostResolver {
         throw new Error('Image type doesnt supported')
       }
 
-      const stream = createReadStream()
-      // const chunks=[]
-      // for await (const chunk of stream){
-      //   chunks.push(chunk)
-      // }
-
-      // const fileBuffer = Buffer.concat(chunks)
+      const fileStream = createReadStream();
       const fileKey = `${Date.now()}-${filename}`
-      imageUrl = await this.s3Service.uploadFile(fileKey, stream , mimetype)
+
+      imageUrl = await this.s3Service.uploadFile(fileKey, fileStream, mimetype)
     }
 
     return this.postService.create(createPostDto,user,imageUrl);

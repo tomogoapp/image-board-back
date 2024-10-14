@@ -45,12 +45,14 @@ import {
     S3Module,
   ],
 })
-export class AppModule implements NestModule {
+// export class AppModule implements NestModule {
 
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }))
-      .forRoutes('graphql')
-  }
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer
+//       .apply(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }))
+//       .forRoutes('graphql')
+//   }
 
-}
+// }
+
+export class AppModule {}

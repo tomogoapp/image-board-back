@@ -1,6 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { S3Client,PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import { Upload } from '@aws-sdk/lib-storage'
 import { ConfigService } from '@nestjs/config'
 import { Readable } from 'stream'
 
@@ -26,16 +27,36 @@ export class S3Service {
     }
 
     async uploadFile(key: string,body: Readable, contentType:string): Promise<string>{
-        const command = new PutObjectCommand({
-            Bucket: this.bucketName,
-            Key: key,
-            Body: body,
-            ContentType: contentType
-        })
+        try{
 
-        await this.s3Client.send(command)
-        const fileUrl= `${this.configService.get<string>('MINIO_ENDPOINT')}/${this.bucketName}/${key}`
-        return fileUrl
+            const upload = new Upload({
+                client: this.s3Client,
+                params:{
+                    Bucket: this.bucketName,
+                    Key: key,
+                    Body: body,
+                    ContentType: contentType
+                }
+            })
+
+            // Opcional: manejar eventos de progreso
+            upload.on('httpUploadProgress', (progress) => {
+                console.log(`Uploaded ${progress.loaded} bytes`)
+            });
+
+            await upload.done()
+
+            const fileUrl = `${this.configService.get<string>('MINIO_ENDPOINT')}/${this.bucketName}/${key}`
+            return fileUrl
+
+        }catch(error){
+            console.error('Error uploading file:', error)
+            throw new Error('Error uploading file')
+        }
+
+        // await this.s3Client.send(command)
+        // const fileUrl= `${this.configService.get<string>('MINIO_ENDPOINT')}/${this.bucketName}/${key}`
+        // return fileUrl
     }
 
     async getFile(key:string):Promise<Readable>{
