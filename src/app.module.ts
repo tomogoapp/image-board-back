@@ -34,6 +34,7 @@ import {
       useFactory: async () => ({
         playground: false,
         uploads: false,
+        cors: false,
         plugins: [ApolloServerPluginLandingPageLocalDefault({ footer: false })],
         //csrfPrevention: false, // Deshabilita la protección CSRF
         autoSchemaFile:join(process.cwd(),'src/schema.gql'),
@@ -45,14 +46,5 @@ import {
     S3Module,
   ],
 })
-// export class AppModule implements NestModule {
-
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer
-//       .apply(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }))
-//       .forRoutes('graphql')
-//   }
-
-// }
 
 export class AppModule {}
