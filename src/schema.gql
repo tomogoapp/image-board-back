@@ -39,6 +39,7 @@ type LoginResponseDTO {
   token: String!
   message: String!
   user: User!
+  success: Boolean!
 }
 
 type LogoutUserResponseDTO {

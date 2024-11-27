@@ -36,9 +36,9 @@ import {
         uploads: false,
         cors: false,
         plugins: [ApolloServerPluginLandingPageLocalDefault({ footer: false })],
-        //csrfPrevention: false, // Deshabilita la protección CSRF
+        csrfPrevention: false, // Deshabilita la protección CSRF
         autoSchemaFile:join(process.cwd(),'src/schema.gql'),
-        context: ({ req }) => ({ req }),
+        context: ({ req, res }) => ({ req, res }),
       }),
     }),
     PostModule,

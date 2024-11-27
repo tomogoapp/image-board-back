@@ -111,9 +111,9 @@ export class AuthService {
     })
 
     return {
-      message: 'Bienvenido',
-      user,
+      success: true,
       token,
+      user,
     }
 
   }

@@ -11,7 +11,7 @@ import { S3Service } from '../s3/s3.service'
 import { FileUpload, GraphQLUpload } from 'graphql-upload-ts';
 
 @Resolver(() => Post)
-@UseGuards(GqlAuthGuard)
+//@UseGuards(GqlAuthGuard)
 export class PostResolver {
   constructor(
     private readonly postService: PostService,
@@ -24,6 +24,7 @@ export class PostResolver {
    * @returns An array of `Post` objects is being returned asynchronously as a Promise.
    */
   @Query(() => [Post])
+  @UseGuards(GqlAuthGuard)
   async posts(): Promise<Post[]> {
     return this.postService.findAll();
   }
@@ -54,6 +55,7 @@ export class PostResolver {
  * create a new post with the provided data (createPostDto, user,
  */
   @Mutation(() => Post)
+  @UseGuards(GqlAuthGuard)
   @Auth()
   async createPost(
     @Args('createPostInput') createPostDto: CreatePostDto,
@@ -76,6 +78,8 @@ export class PostResolver {
 
       imageUrl = await this.s3Service.uploadFile(fileKey, fileStream, mimetype)
     }
+
+    console.log('user -> ',user)
 
     return this.postService.create(createPostDto,user,imageUrl);
   }

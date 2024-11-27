@@ -25,13 +25,12 @@ async function bootstrap() {
   //   exclude: ['/graphql'],
   // })
 
-
   app.use(
     graphqlUploadExpress({ 
       maxFileSize: 10000000, maxFiles: 1 
     }),
     cors<cors.CorsRequest>({
-      origin: '*',
+      origin: ['http://localhost:8080'],
       credentials: true,
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       allowedHeaders: 'Content-Type, Authorization',

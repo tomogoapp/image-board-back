@@ -1,9 +1,8 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql'
 import { AuthService } from './auth.service'
 import { User } from './entities/user.entity'
-import { CreateUserResponseDTO, LoginResponseDTO } from './dto'
+import { CreateUserResponseDTO, LoginResponseDTO, UserResponseDTO } from './dto'
 import { LogoutUserResponseDTO } from './dto/logout-user-response.dto'
-import { Auth } from './decorators'
 
 @Resolver(() => User)
 export class AuthResolver {
@@ -22,12 +21,36 @@ export class AuthResolver {
  * The `LoginResponseDTO` object is likely a data transfer object that contains information about the
  * login operation, such as a token or user details.
  */
+  // @Query(() => LoginResponseDTO,{name: 'login_user'})
+  // async Login(
+  //   @Args('username') username: string,
+  //   @Args('password') password: string,
+  // ): Promise<LoginResponseDTO> {
+  //   return this.authService.login({username,password})
+  // }
+
   @Query(() => LoginResponseDTO,{name: 'login_user'})
   async Login(
     @Args('username') username: string,
     @Args('password') password: string,
-  ): Promise<LoginResponseDTO> {
-    return this.authService.login({username,password})
+    @Context() context: any,
+  ): Promise<UserResponseDTO> { //Promise<LoginResponseDTO>
+    //return this.authService.login({username,password})
+
+    const { token,success, user} = await this.authService.login( {username,password} )
+
+    context.res.cookie('auth_token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 3600000
+    })
+
+    return {
+      message: 'Bienvenido', 
+      success, 
+      user
+    }
   }
 
 /**
