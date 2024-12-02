@@ -47,22 +47,22 @@ services:
     networks:
       - ${NETWORK}
 
-  imagechan-app:
-    image: node:18  # Usamos Node.js 18
-    container_name:  imagechan-app
-    working_dir: /usr/src/app
-    volumes:
-      - ./:/usr/src/app
-    ports:
-      - '5018:5018'
-    # command: sh -c "yarn install && yarn dev"
-    environment:
-      - HOST=0.0.0.0
-      - PORT=5018
-    networks:
-      - windows96
-    depends_on:
-      - app
+  # imagechan-app:
+  #   image: node:18  # Usamos Node.js 18
+  #   container_name:  imagechan-app
+  #   working_dir: /usr/src/app
+  #   volumes:
+  #     - ./:/usr/src/app
+  #   ports:
+  #     - '5018:5018'
+  #   # command: sh -c "yarn install && yarn dev"
+  #   environment:
+  #     - HOST=0.0.0.0
+  #     - PORT=5018
+  #   networks:
+  #     - windows96
+  #   depends_on:
+  #     - app
 
 networks:
   windows96:

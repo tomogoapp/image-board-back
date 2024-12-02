@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ErrorRequestProvider } from 'src/providers/error-request.provider';
 import { LoginFormException } from 'src/providers/login-exception.provider'
+import { RedirectIfAuthenticatedMiddleware } from './middleware/auth.middleware';
 // import { APP_FILTER } from '@nestjs/core';
 // import { GraphQLExceptionFilter } from 'src/filters/graphql-exception.filter';
 
@@ -51,6 +52,7 @@ import { LoginFormException } from 'src/providers/login-exception.provider'
 
     })
   ],
+
   exports:[
     TypeOrmModule,
     JwtStrategy,
@@ -59,4 +61,10 @@ import { LoginFormException } from 'src/providers/login-exception.provider'
     AuthService,
   ]
 })
-export class AuthModule {}
+export class AuthModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(RedirectIfAuthenticatedMiddleware)
+      .forRoutes('/access/login'); // Aplica a estas rutas
+  }
+}

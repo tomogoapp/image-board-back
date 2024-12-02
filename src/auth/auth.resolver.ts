@@ -9,25 +9,26 @@ export class AuthResolver {
   constructor(
     private readonly authService: AuthService,
   ) {}
-
+  
 /**
- * The Login function in TypeScript takes a username and password as arguments and returns a Promise of
- * LoginResponseDTO after calling the login method of the authService.
+ * The Login function in this TypeScript code asynchronously authenticates a user with a username and
+ * password, sets an authentication token in a cookie, and returns a response with a success message
+ * and user information.
  * @param {string} username - The `username` parameter is a string that represents the username
- * provided by the user during the login process.
- * @param {string} password - The `password` parameter in the `Login` function is a string type. It is
- * used to store the password provided by the user during the login process.
- * @returns The `Login` method is returning a `Promise` that resolves to a `LoginResponseDTO` object.
- * The `LoginResponseDTO` object is likely a data transfer object that contains information about the
- * login operation, such as a token or user details.
+ * provided by the user during the login process. It is used to identify the user and authenticate
+ * them.
+ * @param {string} password - The `password` parameter in the `Login` function is a string that
+ * represents the user's password input during the login process. It is used along with the `username`
+ * parameter to authenticate the user and generate a token for authorization.
+ * @param {any} context - The `context` parameter in the `Login` method is used to access the context
+ * object, which contains information about the current request and response. In this specific case,
+ * the `context` parameter is used to set a cookie named 'auth_token' in the response object. This
+ * cookie contains the authentication
+ * @returns The Login function is returning a Promise that resolves to a UserResponseDTO object. The
+ * UserResponseDTO object contains a message "Bienvenido", a success boolean value, and user
+ * information. The function also sets a cookie named 'auth_token' in the response with the token value
+ * received from the authService.login function.
  */
-  // @Query(() => LoginResponseDTO,{name: 'login_user'})
-  // async Login(
-  //   @Args('username') username: string,
-  //   @Args('password') password: string,
-  // ): Promise<LoginResponseDTO> {
-  //   return this.authService.login({username,password})
-  // }
 
   @Query(() => LoginResponseDTO,{name: 'login_user'})
   async Login(
@@ -40,9 +41,9 @@ export class AuthResolver {
     const { token,success, user} = await this.authService.login( {username,password} )
 
     context.res.cookie('auth_token', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
+      httpOnly: process.env.NODE_ENV === 'production', // true | false
+      secure: process.env.NODE_ENV === 'production', // true
+      sameSite: 'Lax', // Más permisivo pero seguro | strict
       maxAge: 3600000
     })
 
@@ -81,17 +82,6 @@ export class AuthResolver {
   ): Promise<CreateUserResponseDTO> {
     return this.authService.create({username,email,password,confirmPassword})
   }
-
-  // @Mutation(() => CreateUserResponseDTO,{name:'create_user'})
-  // async createUser(
-  //   @Args('username') username: string,
-  //   @Args('email') email: string,
-  //   @Args('password') password: string,
-  //   @Args('confirmPassword') confirmPassword: string,
-  // ) {
-  //   return {message:'dsadasdsa'}
-  // }
-
 
 /**
  * The logOutUser function logs out a user by calling the logout method of the authService with the
