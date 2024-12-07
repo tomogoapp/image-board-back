@@ -46,7 +46,8 @@ export class S3Service {
 
             await upload.done()
 
-            const fileUrl = `${this.configService.get<string>('MINIO_ENDPOINT')}/${this.bucketName}/${key}`
+            //const fileUrl = `${this.configService.get<string>('MINIO_ENDPOINT')}/${this.bucketName}/${key}`
+            const fileUrl = `${this.bucketName}/${key}`
             return fileUrl
 
         }catch(error){
