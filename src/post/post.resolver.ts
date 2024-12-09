@@ -69,7 +69,7 @@ export class PostResolver {
     if(image){
       const {createReadStream, filename,mimetype} = image
 
-      if(!['image/jpeg','images.png'].includes(mimetype)){
+      if(!['image/jpeg','image/png','image/webp','image/gif'].includes(mimetype)){
         throw new Error('Image type doesnt supported')
       }
 

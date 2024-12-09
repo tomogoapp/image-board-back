@@ -45,9 +45,15 @@ export class PostService {
  * @returns An array of Post objects with the createdBy relation populated.
  */
   async findAll(): Promise<Post[]> {
-    return this.postRepository.find({
+
+    const result = this.postRepository.find({
       relations: ['createdBy'],
-    });
+      order: {
+        created_at: 'DESC', // Ordena por la columna `created_at` de más reciente a más antiguo
+      },
+    })
+
+    return result ;
   }
 
 

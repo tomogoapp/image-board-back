@@ -46,11 +46,26 @@ type LogoutUserResponseDTO {
   message: String!
 }
 
+type Channel {
+  """Example field (placeholder)"""
+  hash: Int!
+  name: String!
+}
+
+type Reply {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 type Query {
   posts: [Post!]!
   findOnePost(id: String!): Post!
   deleted_posts: [Post!]!
   login_user(username: String!, password: String!): LoginResponseDTO!
+  channels: [Channel!]!
+  channel(id: Int!): Channel!
+  replies: [Reply!]!
+  reply(id: Int!): Reply!
 }
 
 type Mutation {
@@ -60,6 +75,12 @@ type Mutation {
   restorePost(id: String!): Post!
   create_user(username: String!, email: String!, password: String!, confirmPassword: String!): CreateUserResponseDTO!
   logout(token: String!): LogoutUserResponseDTO!
+  createChannel(createChannelInput: CreateChannelInput!): Channel!
+  updateChannel(updateChannelInput: UpdateChannelInput!): Channel!
+  removeChannel(id: Int!): Channel!
+  createReply(createReplyInput: CreateReplyInput!): Reply!
+  updateReply(updateReplyInput: UpdateReplyInput!): Reply!
+  removeReply(id: Int!): Reply!
 }
 
 input CreatePostDto {
@@ -71,3 +92,25 @@ input CreatePostDto {
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+
+input CreateChannelInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateChannelInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateReplyInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateReplyInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}

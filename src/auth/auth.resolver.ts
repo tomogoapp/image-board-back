@@ -44,7 +44,7 @@ export class AuthResolver {
       httpOnly: process.env.NODE_ENV === 'production', // true | false
       secure: process.env.NODE_ENV === 'production', // true
       sameSite: 'Lax', // Más permisivo pero seguro | strict
-      maxAge: 3600000
+      maxAge: 86400000
     })
 
     return {

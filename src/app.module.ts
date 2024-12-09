@@ -11,6 +11,8 @@ import { graphqlUploadExpress } from 'graphql-upload'
 import {
   ApolloServerPluginLandingPageLocalDefault,
 } from '@apollo/server/plugin/landingPage/default'
+import { ChannelsModule } from './channels/channels.module';
+import { RepliesModule } from './replies/replies.module';
 
 
 @Module({
@@ -44,6 +46,8 @@ import {
     PostModule,
     AuthModule,
     S3Module,
+    ChannelsModule,
+    RepliesModule,
   ],
 })
 
