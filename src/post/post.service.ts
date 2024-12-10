@@ -28,9 +28,6 @@ export class PostService {
  * the post created with the provided `createPostDto` and `user` information.
  */
   async create( createPostDto:CreatePostDto,user:User,imageUrl:string):Promise<Post> {
-
-    console.log("d:",imageUrl)
-
     const post = this.postRepository.create({
       ...createPostDto,
       image: imageUrl,

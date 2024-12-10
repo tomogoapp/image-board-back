@@ -11,8 +11,9 @@ import { graphqlUploadExpress } from 'graphql-upload'
 import {
   ApolloServerPluginLandingPageLocalDefault,
 } from '@apollo/server/plugin/landingPage/default'
-import { ChannelsModule } from './channels/channels.module';
-import { RepliesModule } from './replies/replies.module';
+import { ChannelsModule } from './channels/channels.module'
+import { RepliesModule } from './replies/replies.module'
+import GraphQLJSON from 'graphql-type-json/lib/index'
 
 
 @Module({
@@ -41,6 +42,7 @@ import { RepliesModule } from './replies/replies.module';
         csrfPrevention: false, // Deshabilita la protección CSRF
         autoSchemaFile:join(process.cwd(),'src/schema.gql'),
         context: ({ req, res }) => ({ req, res }),
+        resolvers: { JSON: GraphQLJSON },
       }),
     }),
     PostModule,

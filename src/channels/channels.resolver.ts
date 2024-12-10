@@ -3,13 +3,24 @@ import { ChannelsService } from './channels.service';
 import { Channel } from './entities/channel.entity';
 import { CreateChannelInput } from './dto/create-channel.input';
 import { UpdateChannelInput } from './dto/update-channel.input';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
+import { Auth, GetUser } from 'src/auth/decorators';
+import { User } from 'src/auth/entities/user.entity';
 
 @Resolver(() => Channel)
 export class ChannelsResolver {
   constructor(private readonly channelsService: ChannelsService) {}
 
   @Mutation(() => Channel)
-  createChannel(@Args('createChannelInput') createChannelInput: CreateChannelInput) {
+  @UseGuards(GqlAuthGuard)
+  @Auth()
+  createChannel(
+    @Args('createChannelInput')
+    @GetUser() user: User,
+    createChannelInput: CreateChannelInput
+  
+  ){
     return this.channelsService.create(createChannelInput);
   }
 

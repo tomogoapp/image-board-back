@@ -43,6 +43,7 @@
         "express": "^4.17.1",
         "graphql": "^16.6.0",
         "graphql-tools": "^8.2.8",
+        "graphql-type-json": "^0.3.2",
         "graphql-upload-ts": "^2.1.2",
         "passport": "^0.5.2",
         "passport-jwt": "^4.0.0",

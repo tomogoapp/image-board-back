@@ -1,10 +1,11 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ObjectType, Field, Int } from '@nestjs/graphql'
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import GraphQLJSON from 'graphql-type-json'
 
 @ObjectType()
 @Entity()
 export class Channel {
-  @Field(() => String, { description: 'Example field (placeholder)' })
+  @Field(() => String)
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -28,8 +29,8 @@ export class Channel {
   @Column()
   moderator_id: string // this could be a JSON schema, because a channel can be moderate by a group 
 
-  @Field()
-  @Column()
+  @Field(() => GraphQLJSON)
+  @Column('json')
   rules: JSON
 
   @Field()
@@ -40,8 +41,8 @@ export class Channel {
   @Column()
   post_count: number
 
-  @Field()
-  @Column()
+  @Field(() => GraphQLJSON)
+  @Column('json')
   tag: JSON
 
   @Field()
