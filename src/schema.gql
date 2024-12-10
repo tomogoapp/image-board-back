@@ -48,7 +48,7 @@ type LogoutUserResponseDTO {
 
 type Channel {
   """Example field (placeholder)"""
-  hash: Int!
+  id: String!
   name: String!
 }
 
