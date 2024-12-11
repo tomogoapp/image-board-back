@@ -20,11 +20,11 @@ export class ChannelsService {
     const { name,slug } = createChannelInput
 
     const find = await this.channelRepository.count({
-      where:{
-        name: name,
-        slug: slug
-      }
-    })
+      where: [
+        { name: name },
+        { slug: slug }
+      ]
+    });
 
     if(find === 1){
       throw new Error("A channel with this name and slug already exists.");
