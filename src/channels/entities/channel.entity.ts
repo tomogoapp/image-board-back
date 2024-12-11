@@ -29,9 +29,8 @@ export class Channel {
   // @Column()
   // creator_id: string
 
-  @Field()
-  @Column()
-  moderator_id: string // this could be a JSON schema, because a channel can be moderate by a group 
+  @ManyToOne(() => User, (user) => user.id, { eager: true })
+  moderator_id: User // this could be a JSON schema, because a channel can be moderate by a group 
 
   @Field(() => GraphQLJSON)
   @Column('json')

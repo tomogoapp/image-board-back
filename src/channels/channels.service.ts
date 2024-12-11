@@ -15,7 +15,21 @@ export class ChannelsService {
 
   ){}
 
-  create(createChannelInput: CreateChannelInput, user: User) {
+  async create(createChannelInput: CreateChannelInput, user: User): Promise<Channel> {
+
+    const { name,slug } = createChannelInput
+
+    const find = await this.channelRepository.count({
+      where:{
+        name: name,
+        slug: slug
+      }
+    })
+
+    if(find === 1){
+      throw new Error("A channel with this name and slug already exists.");
+    }
+
     const channel = this.channelRepository.create({
       ...createChannelInput,
       creator_id: user

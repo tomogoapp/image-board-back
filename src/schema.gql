@@ -51,7 +51,6 @@ type Channel {
   name: String!
   slug: String!
   description: String!
-  moderator_id: String!
   rules: JSON!
   report_threshold: Float!
   post_count: Float!
