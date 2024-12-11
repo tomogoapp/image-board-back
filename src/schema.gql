@@ -51,7 +51,6 @@ type Channel {
   name: String!
   slug: String!
   description: String!
-  creator_id: String!
   moderator_id: String!
   rules: JSON!
   report_threshold: Float!
@@ -110,10 +109,10 @@ input CreateChannelInput {
   name: String!
   slug: String!
   description: String!
-  rules: [String!]!
-  report_threshold: Int!
-  post_count: Int!
-  tag: [String!]!
+  rules: JSON!
+  report_threshold: Float!
+  post_count: Float!
+  tag: JSON!
   theme: String!
 }
 
@@ -121,10 +120,10 @@ input UpdateChannelInput {
   name: String
   slug: String
   description: String
-  rules: [String!]
-  report_threshold: Int
-  post_count: Int
-  tag: [String!]
+  rules: JSON
+  report_threshold: Float
+  post_count: Float
+  tag: JSON
   theme: String
   id: Int!
 }
