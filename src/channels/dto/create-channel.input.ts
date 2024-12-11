@@ -1,37 +1,38 @@
-import { InputType, Int, Field } from '@nestjs/graphql';
-import { IsString, IsInt, IsArray } from 'class-validator';
+import { InputType, Int, Field } from '@nestjs/graphql'
+import { IsString, IsInt, IsArray } from 'class-validator'
+import GraphQLJSON from 'graphql-type-json'
 
 @InputType()
 export class CreateChannelInput {
-  @Field(() => String)
+  @Field()
   @IsString()
-  name: string;
+  name: string
 
-  @Field(() => String)
+  @Field()
   @IsString()
-  slug: string;
+  slug: string
 
-  @Field(() => String)
+  @Field()
   @IsString()
-  description: string;
+  description: string
 
-  @Field(() => [String]) // Array de cadenas
+  @Field(() => GraphQLJSON)
   @IsArray()
-  rules: string[];
+  rules: JSON
 
-  @Field(() => Int) // Número entero
+  @Field() // Número entero
   @IsInt()
-  report_threshold: number;
+  report_threshold: number
 
-  @Field(() => Int) // Número entero
+  @Field() // Número entero
   @IsInt()
-  post_count: number;
+  post_count: number
 
-  @Field(() => [String]) // Array de cadenas
+  @Field(() => GraphQLJSON)
   @IsArray()
-  tag: string[];
+  tag: JSON
 
-  @Field(() => String)
+  @Field()
   @IsString()
-  theme: string;
+  theme: string
 }

@@ -18,11 +18,9 @@ export class ChannelsService {
   create(createChannelInput: CreateChannelInput, user: User) {
     const channel = this.channelRepository.create({
       ...createChannelInput,
-      creator_id: user, // Asignar el objeto de usuario directamente a la relación ManyToOne
-      rules: createChannelInput.rules, // Esto ya es JSON compatible
-      tag: createChannelInput.tag,   // También JSON compatible
-    })
-    return this.channelRepository.save(channel)
+      creator_id: user
+    });
+    return this.channelRepository.save(channel);
   }
 
   findAll() {
