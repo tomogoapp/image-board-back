@@ -79,8 +79,6 @@ export class PostResolver {
       imageUrl = await this.s3Service.uploadFile(fileKey, fileStream, mimetype)
     }
 
-    console.log('user -> ',user)
-
     return this.postService.create(createPostDto,user,imageUrl);
   }
 

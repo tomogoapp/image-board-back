@@ -107,13 +107,25 @@ input CreatePostDto {
 scalar Upload
 
 input CreateChannelInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  name: String!
+  slug: String!
+  description: String!
+  rules: [String!]!
+  report_threshold: Int!
+  post_count: Int!
+  tag: [String!]!
+  theme: String!
 }
 
 input UpdateChannelInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  name: String
+  slug: String
+  description: String
+  rules: [String!]
+  report_threshold: Int
+  post_count: Int
+  tag: [String!]
+  theme: String
   id: Int!
 }
 

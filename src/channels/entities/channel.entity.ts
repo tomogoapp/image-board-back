@@ -1,6 +1,7 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql'
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import GraphQLJSON from 'graphql-type-json'
+import { User } from 'src/auth/entities/user.entity'
 
 @ObjectType()
 @Entity()
@@ -21,9 +22,12 @@ export class Channel {
   @Column()
   description: string
 
-  @Field()
-  @Column()
-  creator_id: string
+  @ManyToOne(() => User, (user) => user.id, { eager: true })
+  creator_id: User;
+
+  // @Field()
+  // @Column()
+  // creator_id: string
 
   @Field()
   @Column()

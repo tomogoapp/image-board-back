@@ -17,11 +17,12 @@ export class ChannelsResolver {
   @Auth()
   createChannel(
     @Args('createChannelInput')
-    @GetUser() user: User,
-    createChannelInput: CreateChannelInput
+    createChannelInput: CreateChannelInput,
+    @GetUser() 
+    user: User,
   
   ){
-    return this.channelsService.create(createChannelInput);
+    return this.channelsService.create(createChannelInput,user);
   }
 
   @Query(() => [Channel], { name: 'channels' })
