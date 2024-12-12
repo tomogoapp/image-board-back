@@ -36,11 +36,11 @@ export class Post {
     (channel) => channel.id,
     {
       eager: true,
-      nullable: false, // Asegura que un Post siempre tiene un Channel asociado
+      nullable: true, // Asegura que un Post siempre tiene un Channel asociado
     }
   )
   @Field(() => Channel)
-  channel: Channel;
+  channel?: Channel;
 
   @Field(() => String)
   @Column()

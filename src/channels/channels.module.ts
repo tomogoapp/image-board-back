@@ -12,7 +12,8 @@ import { Channel } from './entities/channel.entity';
   ],
   providers: [ChannelsResolver, ChannelsService],
   exports:[
-    ChannelsService
+    ChannelsService,
+    TypeOrmModule,
   ]
 })
 export class ChannelsModule {}

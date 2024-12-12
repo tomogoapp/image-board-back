@@ -83,6 +83,22 @@ export class PostResolver {
   }
 
 /**
+ * This function asynchronously finds posts by channel using the provided slug.
+ * @param {string} slug - The `findByChannel` method is an asynchronous function that takes a `slug`
+ * parameter of type string. This method likely calls the `findByChannel` method of the `postService`
+ * to retrieve data based on the provided `slug`.
+ * @returns The `findByChannel` method is returning the result of calling the `findByChannel` method of
+ * the `postService` with the `slug` parameter passed to it.
+ */
+  @Query(() => [Post], { name: 'posts_by_channel' })
+  async findByChannel(
+    @Args('slug') slug:string
+  ){
+    return await this.postService.findByChannel(slug)
+  }
+
+
+/**
  * This function deletes a post based on the provided ID.
  * @param {string} id - The `id` parameter in the `deletePost` function is a string type argument that
  * represents the identifier of the post that needs to be deleted. This function is part of a service

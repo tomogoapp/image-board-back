@@ -73,6 +73,7 @@ type Reply {
 
 type Query {
   posts: [Post!]!
+  posts_by_channel(slug: String!): [Post!]!
   findOnePost(id: String!): Post!
   deleted_posts: [Post!]!
   login_user(username: String!, password: String!): LoginResponseDTO!
@@ -102,6 +103,7 @@ input CreatePostDto {
   content: String!
   image: String
   anonPost: Boolean!
+  channel: String!
 }
 
 """The `Upload` scalar type represents a file upload."""

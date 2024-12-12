@@ -5,6 +5,8 @@ import { IsNull, Not, Repository } from 'typeorm'
 import { User } from 'src/auth/entities/user.entity'
 import { CreatePostDto } from './dto/create-post.input'
 import { Channel } from 'src/channels/entities/channel.entity'
+import { throwError } from 'rxjs'
+import { error } from 'console'
 
 @Injectable()
 export class PostService {
@@ -12,6 +14,8 @@ export class PostService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+
+    @InjectRepository(Channel)
     private readonly channelRepository: Repository<Channel>
 
   ){}
@@ -79,6 +83,23 @@ export class PostService {
     if (!post) throw new NotFoundException(`Post no encontrado`)
     return post 
   }
+
+  async findByChannel(slug: string): Promise<Post[]> {
+    // Encuentra el canal por su slug
+    const channel = await this.channelRepository.findOne({ where: { slug } });
+  
+    // Verifica si el canal existe
+    if (!channel) {
+      throw new NotFoundException(`Channel with slug "${slug}" not found`);
+    }
+  
+    // Busca los posts asociados al canal encontrado
+    return await this.postRepository.find({
+      where: { channel: { id: channel.id } }, // Busca por la relación
+      relations: ['channel'], // Si necesitas cargar la relación del canal
+    });
+  }
+  
 
 /**
  * The function `delete` deletes a post by its ID and returns a success message if the post is deleted.

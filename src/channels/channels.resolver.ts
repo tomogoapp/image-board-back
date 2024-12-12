@@ -15,6 +15,19 @@ export class ChannelsResolver {
   @Mutation(() => Channel)
   @UseGuards(GqlAuthGuard)
   @Auth()
+/**
+ * The function createChannel takes in a CreateChannelInput and a User object, then calls the create
+ * method of the channelsService with these inputs.
+ * @param {CreateChannelInput} createChannelInput - The `createChannelInput` parameter is of type
+ * `CreateChannelInput`, which likely contains the necessary data to create a new channel. This data
+ * could include information such as the channel name, description, privacy settings, or any other
+ * relevant details needed to create a channel.
+ * @param {User} user - The `user` parameter in the `createChannel` function is of type `User` and is
+ * obtained using the `@GetUser()` decorator. This means that the function expects to receive
+ * information about the current user who is making the request.
+ * @returns The `createChannel` function is returning the result of calling the `create` method from
+ * the `channelsService` with the `createChannelInput` and `user` as arguments.
+ */
   createChannel(
     @Args('createChannelInput')
     createChannelInput: CreateChannelInput,
