@@ -31,15 +31,16 @@ export class Post {
   )
   createdBy?: User
 
-  @OneToMany(
+  @ManyToOne(
     () => Channel,
-    ( channel ) => channel.id,
+    (channel) => channel.id,
     {
-      eager:true
+      eager: true,
+      nullable: false, // Asegura que un Post siempre tiene un Channel asociado
     }
   )
-  @Field()
-  channel: Channel
+  @Field(() => Channel)
+  channel: Channel;
 
   @Field(() => String)
   @Column()

@@ -4,13 +4,15 @@ import { Post } from './entities/post.entity'
 import { IsNull, Not, Repository } from 'typeorm'
 import { User } from 'src/auth/entities/user.entity'
 import { CreatePostDto } from './dto/create-post.input'
+import { Channel } from 'src/channels/entities/channel.entity'
 
 @Injectable()
 export class PostService {
 
   constructor(
     @InjectRepository(Post)
-    private readonly postRepository: Repository<Post>
+    private readonly postRepository: Repository<Post>,
+    private readonly channelRepository: Repository<Channel>
 
   ){}
 
@@ -28,10 +30,20 @@ export class PostService {
  * the post created with the provided `createPostDto` and `user` information.
  */
   async create( createPostDto:CreatePostDto,user:User,imageUrl:string):Promise<Post> {
+
+    const { channel: channelId } = createPostDto
+
+    // Busca el Channel por su ID
+    const channel = await this.channelRepository.findOne({ where: { id: channelId } });
+    if (!channel) {
+      throw new Error('Channel not found');
+    }
+    
     const post = this.postRepository.create({
       ...createPostDto,
       image: imageUrl,
       createdBy:user,
+      channel:channel
     })
     return this.postRepository.save(post)
   }
