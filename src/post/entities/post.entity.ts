@@ -1,8 +1,9 @@
 
 import { ObjectType, Field, Int } from '@nestjs/graphql'
-import { BeforeInsert, BeforeUpdate, Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { BeforeInsert, BeforeUpdate, Column, DeleteDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { slug } from 'slug-gen'
 import { User } from "src/auth/entities/user.entity"
+import { Channel } from 'src/channels/entities/channel.entity'
 
 const date = Date
 
@@ -29,6 +30,16 @@ export class Post {
     { nullable: true }
   )
   createdBy?: User
+
+  @OneToMany(
+    () => Channel,
+    ( channel ) => channel.id,
+    {
+      eager:true
+    }
+  )
+  @Field()
+  channel: Channel
 
   @Field(() => String)
   @Column()

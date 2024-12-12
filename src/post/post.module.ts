@@ -5,11 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { Post } from './entities/post.entity'
 import { AuthModule } from 'src/auth/auth.module'
 import { S3Module } from 'src/s3/s3.module'
+import { ChannelsModule } from 'src/channels/channels.module'
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Post]),
     AuthModule,
+    ChannelsModule,
     S3Module
   ],
   providers: [PostResolver, PostService],

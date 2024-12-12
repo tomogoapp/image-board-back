@@ -41,7 +41,8 @@ export class ChannelsService {
   }
 
   findAll() {
-    return `This action returns all channels`;
+    const data = this.channelRepository.find()
+    return data
   }
 
   findOne(id: number) {

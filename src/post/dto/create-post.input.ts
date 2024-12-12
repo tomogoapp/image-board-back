@@ -24,4 +24,8 @@ export class CreatePostDto {
   @IsBoolean()
   @IsNotEmpty({ message: 'El título es obligatorio' })
   anonPost: boolean
+
+  @Field()
+  @IsString()
+  channel: string
 }

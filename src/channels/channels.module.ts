@@ -10,6 +10,9 @@ import { Channel } from './entities/channel.entity';
     TypeOrmModule.forFeature([Channel]),
     AuthModule
   ],
-  providers: [ChannelsResolver, ChannelsService]
+  providers: [ChannelsResolver, ChannelsService],
+  exports:[
+    ChannelsService
+  ]
 })
 export class ChannelsModule {}
