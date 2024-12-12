@@ -26,15 +26,18 @@ export class ChannelsService {
       ]
     });
 
+
     if(find === 1){
-      throw new Error("A channel with this name and slug already exists.");
+      throw new Error("A channel with this name or slug already exists.");
+    }else{
+      const channel = this.channelRepository.create({
+        ...createChannelInput,
+        creator_id: user
+      });
+      return this.channelRepository.save(channel);
     }
 
-    const channel = this.channelRepository.create({
-      ...createChannelInput,
-      creator_id: user
-    });
-    return this.channelRepository.save(channel);
+
   }
 
   findAll() {
