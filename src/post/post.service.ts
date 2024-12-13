@@ -5,8 +5,6 @@ import { IsNull, Not, Repository } from 'typeorm'
 import { User } from 'src/auth/entities/user.entity'
 import { CreatePostDto } from './dto/create-post.input'
 import { Channel } from 'src/channels/entities/channel.entity'
-import { throwError } from 'rxjs'
-import { error } from 'console'
 
 @Injectable()
 export class PostService {
@@ -34,10 +32,8 @@ export class PostService {
  * the post created with the provided `createPostDto` and `user` information.
  */
   async create( createPostDto:CreatePostDto,user:User,imageUrl:string):Promise<Post> {
-
     const { channel: channelId } = createPostDto
 
-    // Busca el Channel por su ID
     const channel = await this.channelRepository.findOne({ where: { id: channelId } });
     if (!channel) {
       throw new Error('Channel not found');
@@ -62,8 +58,8 @@ export class PostService {
     const result = this.postRepository.find({
       relations: ['createdBy'],
       order: {
-        created_at: 'DESC', // Ordena por la columna `created_at` de más reciente a más antiguo
-      },
+        created_at: 'DESC',
+      }
     })
 
     return result ;
@@ -84,19 +80,32 @@ export class PostService {
     return post 
   }
 
+/**
+ * This TypeScript function asynchronously finds posts by channel slug and returns them in descending
+ * order of creation date.
+ * @param {string} slug - The `slug` parameter in the `findByChannel` method is a string that
+ * represents the unique identifier or key associated with a specific channel. It is used to search for
+ * a channel in the database based on its slug value and retrieve the corresponding posts related to
+ * that channel.
+ * @returns The `findByChannel` method returns a Promise that resolves to an array of `Post` entities.
+ * These posts are filtered based on the channel's ID that is retrieved by finding a channel with the
+ * provided slug. The posts are then fetched from the database with a specified order of creation date
+ * in descending order. The method ensures that a NotFoundException is thrown if the channel with the
+ * given slug is not found.
+ */
   async findByChannel(slug: string): Promise<Post[]> {
-    // Encuentra el canal por su slug
     const channel = await this.channelRepository.findOne({ where: { slug } });
-  
-    // Verifica si el canal existe
+
     if (!channel) {
       throw new NotFoundException(`Channel with slug "${slug}" not found`);
     }
   
-    // Busca los posts asociados al canal encontrado
     return await this.postRepository.find({
-      where: { channel: { id: channel.id } }, // Busca por la relación
-      relations: ['channel'], // Si necesitas cargar la relación del canal
+      where: { channel: { id: channel.id } },
+      relations: ['channel'],
+      order:{
+        created_at:'DESC'
+      }
     });
   }
   

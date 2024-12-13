@@ -1,6 +1,6 @@
 
 import { ObjectType, Field, Int } from '@nestjs/graphql'
-import { BeforeInsert, BeforeUpdate, Column, DeleteDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { BeforeInsert, BeforeUpdate, Column, DeleteDateColumn, Entity, Generated, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { slug } from 'slug-gen'
 import { User } from "src/auth/entities/user.entity"
 import { Channel } from 'src/channels/entities/channel.entity'
@@ -10,12 +10,15 @@ const date = Date
 @ObjectType()
 @Entity()
 export class Post {
-  //@Field(() => Int, { description: 'Example field (placeholder)' })
-  //exampleField: number;
-  
+
   @Field(() => String)
   @PrimaryGeneratedColumn('uuid')
   id: string
+
+  @Field(() => Number, { nullable: true }) // false
+  @Column({ type: 'int', unique: true }) // false
+  @Generated('increment')
+  numberPost: number
 
   @ManyToOne(
     () => User,
@@ -24,7 +27,6 @@ export class Post {
         eager:true
     }
   )
-  //@JoinColumn({ name: 'created_by_id' })
   @Field(
     () => User, 
     { nullable: true }

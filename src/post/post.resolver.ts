@@ -97,7 +97,6 @@ export class PostResolver {
     return await this.postService.findByChannel(slug)
   }
 
-
 /**
  * This function deletes a post based on the provided ID.
  * @param {string} id - The `id` parameter in the `deletePost` function is a string type argument that
@@ -155,7 +154,7 @@ export class PostResolver {
  * the `postService`.
  * @returns A Promise that resolves to a Post object is being returned.
  */
-  @Query(() => Post)
+  @Query(() => Post,{name:'find_post'})
   findOnePost(
     @Args(
       'id'

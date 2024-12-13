@@ -39,6 +39,7 @@ scalar JSON
 
 type Post {
   id: String!
+  numberPost: Float
   createdBy: User
   channel: Channel!
   title: String!
@@ -74,7 +75,7 @@ type Reply {
 type Query {
   posts: [Post!]!
   posts_by_channel(slug: String!): [Post!]!
-  findOnePost(id: String!): Post!
+  find_post(id: String!): Post!
   deleted_posts: [Post!]!
   login_user(username: String!, password: String!): LoginResponseDTO!
   channels: [Channel!]!
