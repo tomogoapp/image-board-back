@@ -13,6 +13,7 @@ import {
 } from '@apollo/server/plugin/landingPage/default'
 import { ChannelsModule } from './channels/channels.module'
 import { RepliesModule } from './replies/replies.module'
+import { ThreadModule } from './thread/thread.module';
 import GraphQLJSON from 'graphql-type-json/lib/index'
 
 
@@ -50,6 +51,7 @@ import GraphQLJSON from 'graphql-type-json/lib/index'
     S3Module,
     ChannelsModule,
     RepliesModule,
+    ThreadModule,
   ],
 })
 

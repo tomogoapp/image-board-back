@@ -5,6 +5,8 @@ import { IsNull, Not, Repository } from 'typeorm'
 import { User } from 'src/auth/entities/user.entity'
 import { CreatePostDto } from './dto/create-post.input'
 import { Channel } from 'src/channels/entities/channel.entity'
+import { Thread } from 'src/thread/entities/thread.entity'
+import { ThreadService } from 'src/thread/thread.service'
 
 @Injectable()
 export class PostService {
@@ -14,7 +16,12 @@ export class PostService {
     private readonly postRepository: Repository<Post>,
 
     @InjectRepository(Channel)
-    private readonly channelRepository: Repository<Channel>
+    private readonly channelRepository: Repository<Channel>,
+
+    @InjectRepository(Thread)
+    private readonly threadRepository: Repository<Thread>,
+    
+    private readonly threadService: ThreadService
 
   ){}
 
@@ -32,20 +39,32 @@ export class PostService {
  * the post created with the provided `createPostDto` and `user` information.
  */
   async create( createPostDto:CreatePostDto,user:User,imageUrl:string):Promise<Post> {
-    const { channel: channelId } = createPostDto
+    const { channel: slug } = createPostDto
 
-    const channel = await this.channelRepository.findOne({ where: { id: channelId } });
+    const channel = await this.channelRepository.findOne({ where: { slug: slug } });
     if (!channel) {
       throw new Error('Channel not found');
     }
-    
+
     const post = this.postRepository.create({
       ...createPostDto,
       image: imageUrl,
       createdBy:user,
       channel:channel
     })
-    return this.postRepository.save(post)
+    const savePost = await this.postRepository.save(post)
+
+    if ( !savePost ) {
+      throw new Error('Error: data not found');
+    }
+
+    // await this.threadRepository.create({
+    //   post: savePost
+    // })
+
+    await this.threadService.createThread({ post: savePost })
+
+    return savePost
   }
 
 

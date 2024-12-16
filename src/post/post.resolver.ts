@@ -9,6 +9,8 @@ import { GqlAuthGuard } from '../auth/guards/gql-auth.guard'
 import { UseGuards } from '@nestjs/common'
 import { S3Service } from '../s3/s3.service'
 import { FileUpload, GraphQLUpload } from 'graphql-upload-ts';
+import { ThreadService } from 'src/thread/thread.service'
+import { Reply } from 'src/replies/entities/reply.entity'
 
 @Resolver(() => Post)
 //@UseGuards(GqlAuthGuard)
@@ -16,6 +18,7 @@ export class PostResolver {
   constructor(
     private readonly postService: PostService,
     private readonly s3Service: S3Service,
+    private readonly threadService: ThreadService
   ) {}
 
   /**
@@ -194,6 +197,19 @@ export class PostResolver {
   
     // Para posts no anónimos, mostrar el creador
     return post.createdBy;
+  }
+
+
+  
+  @ResolveField(() => [Reply], { nullable: true })
+  async thread(@Parent() post: Post): Promise<Reply[]> {
+    const thread = await this.threadService.findThreadByPost(post.id);
+
+    if (!thread) {
+      return [];
+    }
+
+    return thread.reply; // Devuelve las respuestas relacionadas al thread
   }
   
   

@@ -1,7 +1,36 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Thread } from 'src/thread/entities/thread.entity';
 
 @InputType()
 export class CreateReplyInput {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field()
+  @IsString()
+  @IsNotEmpty({ message: 'El título es obligatorio' })
+  title: string
+
+  @Field()
+  @IsString()
+  @IsNotEmpty({ message: 'El título es obligatorio' })
+  content: string
+
+  @Field({ nullable: true })
+  @IsString()
+  @IsOptional()
+  image?:string 
+
+  @Field()
+  @IsBoolean()
+  @IsNotEmpty({ message: 'El título es obligatorio' })
+  anonPost: boolean
+
+  @Field()
+  @IsString()
+  channel: string
+
+  @Field()
+  @IsString()
+  @IsNotEmpty({message:'thread is necesary'})
+  thread: string
+
 }
