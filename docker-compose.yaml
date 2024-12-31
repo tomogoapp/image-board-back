@@ -20,8 +20,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: imagechan-back
-    environment:
-      - PORT=${PORT}
+    # environment:
+    #   - PORT=${PORT}
     ports:
       - '3000:3000'
     depends_on:

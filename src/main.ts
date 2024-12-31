@@ -32,7 +32,8 @@ async function bootstrap() {
     cors<cors.CorsRequest>({
       origin: ['http://localhost:8080'],
       credentials: true,
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      //methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      methods: 'POST',
       allowedHeaders: 'Content-Type, Authorization',
     }),
     cookieParser()
