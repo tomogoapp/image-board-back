@@ -80,13 +80,13 @@ export class Reply {
   @Field(() => Thread)
   thread: Thread
 
-  // @ManyToOne(() => Reply, (reply) => reply.children, { nullable: true })
-  // @Field(() => Reply, { nullable: true })
-  // parent?: Reply;
+  @ManyToOne(() => Reply, (reply) => reply.children, { nullable: true })
+  @Field(() => Reply, { nullable: true })
+  parent?: Reply
 
-  // @OneToMany(() => Reply, (reply) => reply.parent, { nullable: true })
-  // @Field(() => [Reply], { nullable: true })
-  // children?: Reply[];
+  @OneToMany(() => Reply, (reply) => reply.parent, { nullable: true })
+  @Field(() => [Reply], { nullable: true })
+  children?: Reply[]
   
   @Field({ nullable: true })
   @Column({nullable:true})

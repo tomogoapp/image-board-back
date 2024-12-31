@@ -50,6 +50,8 @@ type Reply {
   anonPost: Boolean!
   slug: String!
   thread: Thread!
+  parent: Reply
+  children: [Reply!]
   created_at: DateTime
   updated_at: DateTime
   deleted_at: DateTime

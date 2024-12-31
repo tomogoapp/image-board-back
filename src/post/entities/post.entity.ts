@@ -76,19 +76,19 @@ export class Post {
   @Column()
   slug: string
 
-  @ManyToOne(
-    () => Thread,
-    (thread) => thread.post, // Relación inversa con Thread
-    {
-      nullable: true, // Un Post puede no estar asociado a un Thread
-    }
-  )
-  @Field(() => Thread, { nullable: true })
-  thread?: Thread;
+  // @ManyToOne(
+  //   () => Thread,
+  //   (thread) => thread.post, // Relación inversa con Thread
+  //   {
+  //     nullable: true, // Un Post puede no estar asociado a un Thread
+  //   }
+  // )
+  // @Field(() => Thread, { nullable: true })
+  // thread?: Thread;
 
-//   @ManyToOne(() => Thread, (thread) => thread.post, { eager: true })
-// @Field(() => Thread, { nullable: true }) // Esto asegurará que el esquema GraphQL incluya el campo thread
-// thread?: Thread;
+  @ManyToOne(() => Thread, (thread) => thread.post)
+  @Field(() => Thread, { nullable: true }) // Esto asegurará que el esquema GraphQL incluya el campo thread
+  thread?: Thread;
 
   @Field({ nullable: true })
   @Column({nullable:true})
