@@ -72,17 +72,17 @@ export class PostService {
  * The `findAll` function asynchronously retrieves all posts with their associated createdBy relation.
  * @returns An array of Post objects with the createdBy relation populated.
  */
-  async findAll(): Promise<Post[]> {
+async findAll(): Promise<Post[]> {
+  const result = await this.postRepository
+    .createQueryBuilder('post')
+    .leftJoinAndSelect('post.createdBy', 'createdBy')
+    .leftJoinAndSelect('post.thread', 'thread')
+    .leftJoinAndSelect('thread.post', 'threadPost') // Asegura que `post.thread.post` se carga correctamente
+    .orderBy('post.created_at', 'DESC')
+    .getMany();
 
-    const result = this.postRepository.find({
-      relations: ['createdBy'],
-      order: {
-        created_at: 'DESC',
-      }
-    })
-
-    return result ;
-  }
+  return result;
+}
 
 
 /**

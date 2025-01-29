@@ -1,6 +1,7 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Thread } from 'src/thread/entities/thread.entity';
+import { Reply } from '../entities/reply.entity';
 
 @InputType()
 export class CreateReplyInput {
@@ -28,9 +29,16 @@ export class CreateReplyInput {
   @IsString()
   channel: string
 
+  @Field({ nullable: true })
+  @IsString()
+  @IsOptional()
+  parent?: string // Cambiado a string para aceptar el ID del reply padre
+
   @Field()
   @IsString()
   @IsNotEmpty({message:'thread is necesary'})
   thread: string
+
+
 
 }

@@ -58,9 +58,9 @@ type Reply {
 }
 
 type Thread {
-  id: String!
-  post: Post!
-  reply: [Reply!]!
+  id: String
+  post: Post
+  reply: [Reply!]
   created_at: DateTime
   updated_at: DateTime
   deleted_at: DateTime
@@ -166,6 +166,7 @@ input CreateReplyInput {
   image: String
   anonPost: Boolean!
   channel: String!
+  parent: String
   thread: String!
 }
 
@@ -175,6 +176,7 @@ input UpdateReplyInput {
   image: String
   anonPost: Boolean
   channel: String
+  parent: String
   thread: String
   id: Int!
 }

@@ -15,21 +15,21 @@ import {
 @ObjectType()
 @Entity()
 export class Thread {
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @ManyToOne(() => Post, (post) => post.thread, {
-    eager: true, // Solo cargar los Posts automáticamente
-    nullable: false,
+    eager: true, 
+    nullable: true, // ✅ Mantiene la flexibilidad en TypeORM
   })
-  @Field(() => Post)
+  @Field(() => Post, { nullable: true }) // ✅ Ahora GraphQL acepta `null`
   post?: Post;
 
   @OneToMany(() => Reply, (reply) => reply.thread, {
-    eager: false, // Carga explícita para evitar ciclos
+    eager: false, 
   })
-  @Field(() => [Reply])
+  @Field(() => [Reply], { nullable: true }) // ✅ Evita errores si `reply` es null
   reply?: Reply[];
 
   @Field({ nullable: true })

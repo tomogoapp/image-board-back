@@ -26,7 +26,7 @@ export class RepliesService {
   ){}
 
   async create(createReplyInput: CreateReplyInput,user:User,imageUrl:string):Promise<Reply> {
-    const { thread: threadId, channel: slug } = createReplyInput
+    const { thread: threadId, channel: slug, parent:parentId } = createReplyInput
     
     const channel = await this.channelRepository.findOne({ where: { slug: slug } });
     if (!channel) {
@@ -39,9 +39,20 @@ export class RepliesService {
       throw new Error('Thread not Found')
     }
 
+    // Buscar el reply padre por su ID si se proporciona
+    let parentReply: Reply | undefined;
+    if (parentId) {
+      parentReply = await this.replyRepository.findOne({ where: { id: parentId } });
+        if (!parentReply) {
+          throw new Error('Parent reply not found');
+        }
+    }
+
+
     const reply = this.replyRepository.create({
       ...createReplyInput,
       thread,
+      parent: parentReply,
       image: imageUrl,
       createdBy:user,
       channel:channel
