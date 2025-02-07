@@ -62,7 +62,7 @@ export class PostService {
     //   post: savePost
     // })
 
-    await this.threadService.createThread({ post: savePost })
+    await this.threadService.createThread(savePost)
 
     return savePost
   }

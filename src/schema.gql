@@ -78,7 +78,7 @@ type Post {
   image: String
   anonPost: Boolean!
   slug: String!
-  thread: Thread
+  thread: Thread!
   created_at: DateTime
   updated_at: DateTime
   deleted_at: DateTime

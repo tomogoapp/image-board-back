@@ -85,10 +85,9 @@ export class Post {
   // )
   // @Field(() => Thread, { nullable: true })
   // thread?: Thread;
-
-  @ManyToOne(() => Thread, (thread) => thread.post)
-  @Field(() => Thread, { nullable: true }) // Esto asegurará que el esquema GraphQL incluya el campo thread
-  thread?: Thread;
+  @ManyToOne(() => Thread, (thread) => thread.post, { nullable: false }) // ✅ Cada post pertenece a un thread
+  @Field(() => Thread) 
+  thread: Thread;
 
   @Field({ nullable: true })
   @Column({nullable:true})

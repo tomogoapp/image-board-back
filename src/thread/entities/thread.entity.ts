@@ -21,9 +21,9 @@ export class Thread {
 
   @ManyToOne(() => Post, (post) => post.thread, {
     eager: true, 
-    nullable: true, // ✅ Mantiene la flexibilidad en TypeORM
+    nullable: true, // ✅ Esto permite que Thread no tenga un Post asociado
   })
-  @Field(() => Post, { nullable: true }) // ✅ Ahora GraphQL acepta `null`
+  @Field(() => Post, { nullable: true }) 
   post?: Post;
 
   @OneToMany(() => Reply, (reply) => reply.thread, {

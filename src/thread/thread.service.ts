@@ -10,19 +10,35 @@ export class ThreadService {
 
     constructor(
         @InjectRepository(Thread)
-        private readonly threadRepository: Repository<Thread>
+        private readonly threadRepository: Repository<Thread>,
+
+        @InjectRepository(Post)
+        private readonly postRepository: Repository<Post>
     ){}
 
-    async createThread(data: { post: Post }): Promise<Thread>{
-        const thread = await this.threadRepository.create(data)
-        return await this.threadRepository.save(thread)
+    async createThread(post: Post): Promise<Thread> {
+      const thread = new Thread();
+      thread.post = post; // ✅ Asigna el Post al Thread
+  
+      const savedThread = await this.threadRepository.save(thread);
+  
+      post.thread = savedThread; // ✅ Asigna el Thread al Post
+      await this.postRepository.save(post); // ✅ Guarda el Post actualizado
+  
+      return savedThread;
     }
 
     async findThreadByPost(postId: string): Promise<Thread | null> {
-        return this.threadRepository.findOne({
-          where: { post: { id: postId } },
-          relations: ['reply'], // Carga las replies asociadas
-        });
-      }
+      return this.threadRepository.findOne({
+        where: { post: { id: postId } },
+        relations: ['reply'], // Carga las replies asociadas
+      });
+    }
+
+    async findAll(): Promise<Thread[]> {
+      return this.threadRepository.find({
+        relations: ["post", "reply", "reply.children"], // ✅ Carga todo
+     });
+    }
 
 }
