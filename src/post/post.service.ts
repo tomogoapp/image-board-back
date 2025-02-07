@@ -4,13 +4,24 @@ import { Post } from './entities/post.entity'
 import { IsNull, Not, Repository } from 'typeorm'
 import { User } from 'src/auth/entities/user.entity'
 import { CreatePostDto } from './dto/create-post.input'
+import { Channel } from 'src/channels/entities/channel.entity'
+import { Thread } from 'src/thread/entities/thread.entity'
+import { ThreadService } from 'src/thread/thread.service'
 
 @Injectable()
 export class PostService {
 
   constructor(
     @InjectRepository(Post)
-    private readonly postRepository: Repository<Post>
+    private readonly postRepository: Repository<Post>,
+
+    @InjectRepository(Channel)
+    private readonly channelRepository: Repository<Channel>,
+
+    @InjectRepository(Thread)
+    private readonly threadRepository: Repository<Thread>,
+    
+    private readonly threadService: ThreadService
 
   ){}
 
@@ -27,13 +38,33 @@ export class PostService {
  * @returns The `create` method is returning a Promise that resolves to a `Post` object after saving
  * the post created with the provided `createPostDto` and `user` information.
  */
-  async create( createPostDto:CreatePostDto,user:User,fileUrl ):Promise<Post> {
+  async create( createPostDto:CreatePostDto,user:User,imageUrl:string):Promise<Post> {
+    const { channel: slug } = createPostDto
+
+    const channel = await this.channelRepository.findOne({ where: { slug: slug } });
+    if (!channel) {
+      throw new Error('Channel not found');
+    }
 
     const post = this.postRepository.create({
       ...createPostDto,
-      createdBy:user
+      image: imageUrl,
+      createdBy:user,
+      channel:channel
     })
-    return this.postRepository.save(post)
+    const savePost = await this.postRepository.save(post)
+
+    if ( !savePost ) {
+      throw new Error('Error: data not found');
+    }
+
+    // await this.threadRepository.create({
+    //   post: savePost
+    // })
+
+    await this.threadService.createThread(savePost)
+
+    return savePost
   }
 
 
@@ -41,11 +72,17 @@ export class PostService {
  * The `findAll` function asynchronously retrieves all posts with their associated createdBy relation.
  * @returns An array of Post objects with the createdBy relation populated.
  */
-  async findAll(): Promise<Post[]> {
-    return this.postRepository.find({
-      relations: ['createdBy'],
-    });
-  }
+async findAll(): Promise<Post[]> {
+  const result = await this.postRepository
+    .createQueryBuilder('post')
+    .leftJoinAndSelect('post.createdBy', 'createdBy')
+    .leftJoinAndSelect('post.thread', 'thread')
+    .leftJoinAndSelect('thread.post', 'threadPost') // Asegura que `post.thread.post` se carga correctamente
+    .orderBy('post.created_at', 'DESC')
+    .getMany();
+
+  return result;
+}
 
 
 /**
@@ -61,6 +98,36 @@ export class PostService {
     if (!post) throw new NotFoundException(`Post no encontrado`)
     return post 
   }
+
+/**
+ * This TypeScript function asynchronously finds posts by channel slug and returns them in descending
+ * order of creation date.
+ * @param {string} slug - The `slug` parameter in the `findByChannel` method is a string that
+ * represents the unique identifier or key associated with a specific channel. It is used to search for
+ * a channel in the database based on its slug value and retrieve the corresponding posts related to
+ * that channel.
+ * @returns The `findByChannel` method returns a Promise that resolves to an array of `Post` entities.
+ * These posts are filtered based on the channel's ID that is retrieved by finding a channel with the
+ * provided slug. The posts are then fetched from the database with a specified order of creation date
+ * in descending order. The method ensures that a NotFoundException is thrown if the channel with the
+ * given slug is not found.
+ */
+  async findByChannel(slug: string): Promise<Post[]> {
+    const channel = await this.channelRepository.findOne({ where: { slug } });
+
+    if (!channel) {
+      throw new NotFoundException(`Channel with slug "${slug}" not found`);
+    }
+  
+    return await this.postRepository.find({
+      where: { channel: { id: channel.id } },
+      relations: ['channel'],
+      order:{
+        created_at:'DESC'
+      }
+    });
+  }
+  
 
 /**
  * The function `delete` deletes a post by its ID and returns a success message if the post is deleted.

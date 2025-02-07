@@ -1,7 +1,7 @@
 
 // src/post/dto/create-post.dto.ts
 import { InputType, Field } from '@nestjs/graphql';
-import { IsString, IsBoolean, IsNotEmpty } from 'class-validator';
+import { IsString, IsBoolean, IsNotEmpty,IsOptional } from 'class-validator';
 
 @InputType()
 export class CreatePostDto {
@@ -15,12 +15,17 @@ export class CreatePostDto {
   @IsNotEmpty({ message: 'El título es obligatorio' })
   content: string
 
-  @Field()
+  @Field({ nullable: true })
   @IsString()
+  @IsOptional()
   image?:string 
 
   @Field()
   @IsBoolean()
   @IsNotEmpty({ message: 'El título es obligatorio' })
   anonPost: boolean
+
+  @Field()
+  @IsString()
+  channel: string
 }

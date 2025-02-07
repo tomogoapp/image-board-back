@@ -1,7 +1,7 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common'
 
-export class LoginException extends HttpException {
+export class LoginFormException extends HttpException {
   constructor(field: string, message: string) {
-    super({ field, message }, HttpStatus.UNAUTHORIZED);
+    super({ field, message }, HttpStatus.UNAUTHORIZED)
   }
 }

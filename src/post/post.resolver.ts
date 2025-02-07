@@ -7,16 +7,18 @@ import { validRoles } from 'src/auth/interface'
 import { CreatePostDto } from './dto/create-post.input'
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard'
 import { UseGuards } from '@nestjs/common'
-import *  as Upload from 'graphql-upload/Upload.js'
-import *  as GraphQLUpload from 'graphql-upload/GraphQLUpload.js'
 import { S3Service } from '../s3/s3.service'
+import { FileUpload, GraphQLUpload } from 'graphql-upload-ts';
+import { ThreadService } from 'src/thread/thread.service'
+import { Reply } from 'src/replies/entities/reply.entity'
 
 @Resolver(() => Post)
-@UseGuards(GqlAuthGuard)
+//@UseGuards(GqlAuthGuard)
 export class PostResolver {
   constructor(
     private readonly postService: PostService,
     private readonly s3Service: S3Service,
+    private readonly threadService: ThreadService
   ) {}
 
   /**
@@ -25,6 +27,7 @@ export class PostResolver {
    * @returns An array of `Post` objects is being returned asynchronously as a Promise.
    */
   @Query(() => [Post])
+  @UseGuards(GqlAuthGuard)
   async posts(): Promise<Post[]> {
     return this.postService.findAll();
   }
@@ -35,43 +38,66 @@ export class PostResolver {
   // }
 
 /**
- * This TypeScript function creates a new post with a title, content, and user information.
- * @param {string} title - The `title` parameter is a string that represents the title of the post
- * being created.
- * @param {string} content - The `content` parameter in the `createPost` function is a string that
- * represents the content of the post that the user wants to create. It is one of the arguments
- * required for creating a new post.
- * @param {User} user - The `user` parameter in the `createPost` function is of type `User`. It is
- * likely used to identify the user who is creating the post. This parameter is decorated with
- * `@GetUser()`, which suggests that it is being extracted from the request context or session. This
- * way,
- * @returns The `createPost` method is returning a Promise that resolves to a `Post` object.
+ * This TypeScript function creates a post with optional image upload functionality and returns a
+ * Promise of the created post.
+ * @param {CreatePostDto} createPostDto - The `createPostDto` parameter is an object that contains
+ * the data needed to create a new post. It likely includes properties such as title, content, and
+ * any other relevant information for the post. This parameter is passed to the `createPost` function
+ * when a new post is being created.
+ * @param {User} user - The `user` parameter in the `createPost` function represents the user who is
+ * creating the post. It is of type `User` and is obtained using the `@GetUser()` decorator. This
+ * parameter allows you to identify the user who is making the post and associate the post with their
+ * account
+ * @param {FileUpload} image - The `image` parameter in the `createPost` function is of type
+ * `FileUpload`, which is used to handle file uploads in GraphQL. When a user uploads an image, the
+ * `image` parameter will contain information about the uploaded file, such as the `createReadStream`
+ * function to access the
+ * @returns The `createPost` function is returning a Promise that resolves to a `Post` object. The
+ * function first checks if an image file is provided, validates the file type, uploads the file to
+ * an S3 bucket using the `s3Service`, and then calls the `create` method of the `postService` to
+ * create a new post with the provided data (createPostDto, user,
  */
   @Mutation(() => Post)
+  @UseGuards(GqlAuthGuard)
   @Auth()
   async createPost(
     @Args('createPostInput') createPostDto: CreatePostDto,
-    @Args({ name: 'file', type: () => GraphQLUpload })
-    file: Upload,
     @GetUser() user: User,
+    @Args({ name: 'image', type: () => GraphQLUpload, nullable:true })
+    image: FileUpload,
   ): Promise<Post> {
 
-    const { createReadStream, filename, mimetype } = file
+    let imageUrl: string | undefined
 
-    if(!['image/jpeg','image/png'].includes(mimetype)){
-      throw new Error('Error: file type not supported')
+    if(image){
+      const {createReadStream, filename,mimetype} = image
+
+      if(!['image/jpeg','image/png','image/webp','image/gif'].includes(mimetype)){
+        throw new Error('Image type doesnt supported')
+      }
+
+      const fileStream = createReadStream();
+      const fileKey = `${Date.now()}-${filename}`
+
+      imageUrl = await this.s3Service.uploadFile(fileKey, fileStream, mimetype)
     }
 
-    // Genera un nombre único para el archivo
-    const uniqueFilename = `${Date.now()}-${filename}`
+    return this.postService.create(createPostDto,user,imageUrl);
+  }
 
-    // Sube el archivo a MinIO utilizando el SDK de S3
-    await this.s3Service.uploadFile(uniqueFilename, createReadStream(), mimetype)
-
-    // Construye la URL de acceso al archivo
-    const fileUrl = `${process.env.MINIO_ENDPOINT}/${process.env.MINIO_BUCKET}/${uniqueFilename}`
-
-    return this.postService.create(createPostDto,user,fileUrl);
+/**
+ * This function asynchronously finds posts by channel using the provided slug.
+ * @param {string} slug - The `findByChannel` method is an asynchronous function that takes a `slug`
+ * parameter of type string. This method likely calls the `findByChannel` method of the `postService`
+ * to retrieve data based on the provided `slug`.
+ * @returns The `findByChannel` method is returning the result of calling the `findByChannel` method of
+ * the `postService` with the `slug` parameter passed to it.
+ */
+  @Query(() => [Post], { name: 'posts_by_channel' })
+  async findByChannel(
+    @Args('slug') slug:string
+  ){
+    return await this.postService.findByChannel(slug)
   }
 
 /**
@@ -131,7 +157,7 @@ export class PostResolver {
  * the `postService`.
  * @returns A Promise that resolves to a Post object is being returned.
  */
-  @Query(() => Post)
+  @Query(() => Post,{name:'find_post'})
   findOnePost(
     @Args(
       'id'
@@ -171,6 +197,19 @@ export class PostResolver {
   
     // Para posts no anónimos, mostrar el creador
     return post.createdBy;
+  }
+
+
+  
+  @ResolveField(() => [Reply], { nullable: true })
+  async thread(@Parent() post: Post): Promise<Reply[]> {
+    const thread = await this.threadService.findThreadByPost(post.id);
+
+    if (!thread) {
+      return [];
+    }
+
+    return thread.reply; // Devuelve las respuestas relacionadas al thread
   }
   
   

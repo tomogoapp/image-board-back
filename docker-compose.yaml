@@ -13,30 +13,31 @@ services:
     ports:
       - '5432:5432'
     networks:
-      - windows96
+      - ${NETWORK}
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: imagechan-back
-    environment:
-      - PORT=${PORT}
+    # environment:
+    #   - PORT=${PORT}
     ports:
       - '3000:3000'
     depends_on:
       - db
     volumes:
       - ./src:/app/src
+      - ./node_modules:/app/node_modules  # Monta node_modules como volumen
     networks:
-      - windows96
+      - ${NETWORK}
 
   minio:
     image: minio/minio
     container_name: ${MINIO_CONTAINER_NAME}
     ports:
-      - ${MINIO_PORTS_DB}
-      - ${MINIO_PORTS_INTERFACE}
+      - "9050:9000"  # Mapear el puerto 9050 en el host al puerto 9000 en el contenedor para la API S3
+      - "9005:9005"  # Puerto 9005 para la consola MinIO
     volumes:
       - "/mnt/data:/data"
     environment:
@@ -47,58 +48,27 @@ services:
     networks:
       - ${NETWORK}
 
-
+  # imagechan-app:
+  #   image: node:18  # Usamos Node.js 18
+  #   container_name:  imagechan-app
+  #   working_dir: /usr/src/app
+  #   volumes:
+  #     - ./:/usr/src/app
+  #   ports:
+  #     - '5018:5018'
+  #   # command: sh -c "yarn install && yarn dev"
+  #   environment:
+  #     - HOST=0.0.0.0
+  #     - PORT=5018
+  #   networks:
+  #     - windows96
+  #   depends_on:
+  #     - app
 
 networks:
   windows96:
-    external: true
+    driver: bridge
+    name: windows96
+    #external: true
 
 
-
-
-
-# version: '3.9'
-
-# services:
-#   # app:
-#   #   build: .
-#   #   container_name: nest_app
-#   #   restart: always
-#   #   env_file:
-#   #     - .env
-#   #   ports:
-#   #     - "3000:3000" # Mapear puerto 3000 del contenedor al 3000 del host
-#   #   volumes:
-#   #     - ./:/app # Monta el directorio de trabajo actual en /app dentro del contenedor
-#   #   networks:
-#   #     - windows96
-
-#   db:
-#     image: postgres:14.3
-#     restart: always
-#     ports:
-#       - "5432:5432"
-#     environment:
-#       POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
-#       POSTGRES_DB: ${POSTGRES_DB_DATABASE}
-#     container_name: ${POSTGRES_DB_CONTAINER_NAME}
-#     volumes:
-#       - ./postgres:/var/lib/postgresql/data
-#     networks:
-#       - windows96
-
-#   # nginx:
-#   #   image: nginx:latest
-#   #   container_name: nginx
-#   #   ports:
-#   #     - "80:80" # Exponer puerto 80 en el host
-#   #   volumes:
-#   #     - ./nginx.conf:/etc/nginx/nginx.conf
-#   #   networks:
-#   #     - windows96
-#   #   depends_on:
-#   #     - app
-
-# networks:
-#   windows96:
-#     external: true

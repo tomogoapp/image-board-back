@@ -7,8 +7,24 @@ export class LoginResponseDTO {
   token: string;
 
   @Field(() => String)
+  message?: string;
+
+  @Field(() => User)
+  user: User;
+
+  @Field(() => Boolean)
+  success: boolean
+
+}
+
+@ObjectType()
+export class UserResponseDTO{
+  @Field(() => String)
   message: string;
 
   @Field(() => User)
   user: User;
+
+  @Field(() => Boolean)
+  success: boolean
 }

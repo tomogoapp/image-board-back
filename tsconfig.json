@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "maxNodeModuleJsDepth": 10,
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "declaration": true,
     "removeComments": true,

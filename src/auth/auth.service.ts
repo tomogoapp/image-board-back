@@ -14,7 +14,7 @@ import { Repository } from 'typeorm'
 import { User } from './entities/user.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ErrorRequestProvider } from 'src/providers/error-request.provider'
-import { LoginException } from 'src/providers/login-exception.provider'
+import { LoginFormException } from 'src/providers/login-exception.provider'
 import * as bcrypt from 'bcryptjs'
 import { JwtPayload } from './interface/jwt-payload'
 import { JwtService } from '@nestjs/jwt'
@@ -95,11 +95,11 @@ export class AuthService {
     })
 
     if( !user ){
-      throw new LoginException('username','User Not Found')
+      throw new LoginFormException('username','User Not Found')
     }
 
     if( !bcrypt.compareSync(password, user.password) ){
-      throw new LoginException('password','Password doen\'t match')
+      throw new LoginFormException('password','Password doen\'t match')
     }
 
     const token = this.getJwtToken({
@@ -110,13 +110,10 @@ export class AuthService {
       roles: user.roles,
     })
 
-
-    //return user
-
     return {
-      message: 'Bienvenido',
-      user,
+      success: true,
       token,
+      user,
     }
 
   }

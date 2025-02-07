@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,10 +8,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ErrorRequestProvider } from 'src/providers/error-request.provider';
-import { LoginException } from 'src/providers/login-exception.provider'
+import { LoginFormException } from 'src/providers/login-exception.provider'
+import { RedirectIfAuthenticatedMiddleware } from './middleware/auth.middleware';
+// import { APP_FILTER } from '@nestjs/core';
+// import { GraphQLExceptionFilter } from 'src/filters/graphql-exception.filter';
 
 @Module({
   providers: [
+    // {
+    //   provide:APP_FILTER,
+    //   useClass: GraphQLExceptionFilter
+    // },
     AuthResolver, 
     AuthService,
     JwtStrategy,
@@ -20,7 +27,7 @@ import { LoginException } from 'src/providers/login-exception.provider'
       provide: 'ServiceName', 
       useValue: 'ErrorRequestProvider' 
     },
-    LoginException
+    LoginFormException
   ],
   imports:[
     TypeOrmModule.forFeature([User]),
@@ -45,6 +52,7 @@ import { LoginException } from 'src/providers/login-exception.provider'
 
     })
   ],
+
   exports:[
     TypeOrmModule,
     JwtStrategy,
@@ -53,4 +61,10 @@ import { LoginException } from 'src/providers/login-exception.provider'
     AuthService,
   ]
 })
-export class AuthModule {}
+export class AuthModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(RedirectIfAuthenticatedMiddleware)
+      .forRoutes('/access/login'); // Aplica a estas rutas
+  }
+}
