@@ -85,7 +85,11 @@ export class Post {
   // )
   // @Field(() => Thread, { nullable: true })
   // thread?: Thread;
-  @ManyToOne(() => Thread, (thread) => thread.post, { nullable: false }) // ✅ Cada post pertenece a un thread
+
+  @ManyToOne(() => Thread, (thread) => thread.post, { 
+    nullable: true,
+    onDelete: "SET NULL" // 🔥 Si se borra un Thread, su referencia en Post será NULL
+  }) // ✅ Cada post pertenece a un thread
   @Field(() => Thread) 
   thread: Thread;
 

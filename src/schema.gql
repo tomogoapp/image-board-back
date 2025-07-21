@@ -59,8 +59,9 @@ type Reply {
 
 type Thread {
   id: String
-  post: Post
+  post: Post!
   reply: [Reply!]
+  createdBy: User
   created_at: DateTime
   updated_at: DateTime
   deleted_at: DateTime
@@ -104,6 +105,7 @@ type Query {
   posts_by_channel(slug: String!): [Post!]!
   find_post(id: String!): Post!
   deleted_posts: [Post!]!
+  threads: [Thread!]!
   login_user(username: String!, password: String!): LoginResponseDTO!
   channels: [Channel!]!
   channel(id: Int!): Channel!

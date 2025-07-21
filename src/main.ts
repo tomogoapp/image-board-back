@@ -34,7 +34,7 @@ async function bootstrap() {
       credentials: true,
       //methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       methods: 'POST',
-      allowedHeaders: 'Content-Type, Authorization',
+      allowedHeaders: 'Content-Type, Authorization,Apollo-Require-Preflight',
     }),
     cookieParser()
   );

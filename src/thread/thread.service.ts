@@ -16,16 +16,17 @@ export class ThreadService {
         private readonly postRepository: Repository<Post>
     ){}
 
-    async createThread(post: Post): Promise<Thread> {
-      const thread = new Thread();
-      thread.post = post; // ✅ Asigna el Post al Thread
+    async createThread(post: Post,user): Promise<Thread> {
+      const thread = new Thread()
+      thread.post = post // ✅ Asigna el Post al Thread
+      thread.createdBy = user // ✅ Asigna el usuario al
   
-      const savedThread = await this.threadRepository.save(thread);
+      const savedThread = await this.threadRepository.save(thread)
   
-      post.thread = savedThread; // ✅ Asigna el Thread al Post
-      await this.postRepository.save(post); // ✅ Guarda el Post actualizado
+      post.thread = savedThread // ✅ Asigna el Thread al Post
+      await this.postRepository.save(post) // ✅ Guarda el Post actualizado
   
-      return savedThread;
+      return savedThread
     }
 
     async findThreadByPost(postId: string): Promise<Thread | null> {
@@ -36,9 +37,11 @@ export class ThreadService {
     }
 
     async findAll(): Promise<Thread[]> {
-      return this.threadRepository.find({
-        relations: ["post", "reply", "reply.children"], // ✅ Carga todo
-     });
+      return this.threadRepository.find({ 
+        relations: ["post", "reply"],
+        order: { created_at: "DESC" }
+      });
     }
+  
 
 }

@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { PostModule } from 'src/post/post.module'
 import { RepliesModule } from 'src/replies/replies.module'
 import { Thread } from './entities/thread.entity'
+import { AuthModule } from 'src/auth/auth.module'
 
 @Module({
   providers: [ThreadResolver, ThreadService],
@@ -13,6 +14,7 @@ import { Thread } from './entities/thread.entity'
     forwardRef(() => PostModule),
     forwardRef(() => RepliesModule),
     //PostModule,
+    AuthModule,
   ],
   exports:[
     ThreadModule,
